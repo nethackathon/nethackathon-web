@@ -1,6 +1,18 @@
 <template>
   <v-app>
     <v-main>
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <div
+              v-bind="attrs"
+              v-on="on"
+              @click="clickLamp"
+              class="magic-lamp">
+            )
+          </div>
+        </template>
+        <span>You see here a magic lamp.</span>
+      </v-tooltip>
       <v-container>
         <v-row class="mt-5">
           <v-col offset-md="2" md="8" cols="12">
@@ -63,6 +75,7 @@ export default {
   },
 
   created: function () {
+    this.$vuetify.theme.dark = (localStorage.getItem('dark') === undefined) ? true : (localStorage.getItem('dark') === 'off')
     this.startDate = DateTime.fromISO('2021-09-10T17:00:00.000', {zone: 'utc'})
     this.endDate = DateTime.fromISO('2021-09-13T04:00:00.000', {zone: 'utc'})
     this.timeLeft = Interval.fromDateTimes(DateTime.now(), this.startDate)
@@ -172,15 +185,15 @@ export default {
         featured: false
       },
       {
-        channel: 'JJvanTheMan',
+        channel: 'Cloudmillion',
         starting: '2021-09-10T21:00:00Z',
-        duration: 3,
+        duration: 2,
         featured: false
       },
       {
-        channel: 'Cloudmillion',
-        starting: '2021-09-11T00:00:00Z',
-        duration: 2,
+        channel: 'JJvanTheMan',
+        starting: '2021-09-10T23:00:00Z',
+        duration: 3,
         featured: false
       },
       {
@@ -317,6 +330,12 @@ export default {
   },
 
   methods: {
+    clickLamp: function () {
+      let dark = (localStorage.getItem('dark') === undefined) ? 'off' : localStorage.getItem('dark')
+      dark = (dark === 'off') ? 'on' : 'off'
+      localStorage.setItem('dark', dark)
+      this.$vuetify.theme.dark = (dark === 'off')
+    },
     startCountDown: function () {
       setInterval(() => {
         if (this.startDate && this.timeLeft) {
@@ -350,3 +369,22 @@ export default {
 
 };
 </script>
+
+<style>
+  .magic-lamp {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    color: #FFFF55;
+    font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
+    font-size: xxx-large;
+    font-weight: bolder;
+    cursor: pointer;
+    background: #121212;
+    width: 1.2em;
+    height: 1.2em;
+    text-align: center;
+    line-height: 1.2em;
+    padding-left: 0.2em;
+  }
+</style>

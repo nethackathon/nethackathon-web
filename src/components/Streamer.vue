@@ -28,11 +28,9 @@
 
   a.streamer {
     text-decoration: none;
-    color: black !important;
   }
 
   a:hover.streamer {
     text-decoration: underline;
-    color: black !important;
   }
 </style>
