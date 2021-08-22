@@ -6,6 +6,8 @@
         <thead>
         <tr>
           <th class="text-left">
+          </th>
+          <th class="text-left">
             Date
           </th>
           <th class="text-left">
@@ -18,12 +20,14 @@
         </thead>
         <tbody v-for="d in daysInLocal" :key="d.start.toMillis()">
         <tr>
-          <td colspan="3" class="dateHeader">{{formattedDay(d.start)}}</td>
+          <td colspan="4" class="dateHeader">{{formattedDay(d.start)}}</td>
         </tr>
         <tr
+            @click="openTwitch"
             v-for="s in streamersOnDay(d)"
-            :class="{'streaming': isStreaming(s)}"
+            :class="{'streaming': (currentlyStreaming && currentlyStreaming.channel === s.channel)}"
             :key="s.starting">
+          <td><v-icon v-if="currentlyStreaming && currentlyStreaming.channel === s.channel">mdi-twitch</v-icon></td>
           <td>{{ formattedStart(s.starting) }}</td>
           <td><Streamer :streamer="s"/></td>
           <td><span v-if="s.title">{{ s.title }}</span></td>
@@ -45,7 +49,7 @@
       Streamer
     },
 
-    props: ['schedule', 'startDate', 'endDate'],
+    props: ['schedule', 'startDate', 'endDate', 'currentlyStreaming'],
 
     computed: {
       daysInLocal: function () {
@@ -60,6 +64,11 @@
     },
 
     methods: {
+      openTwitch() {
+        if (!this.currentlyStreaming || !this.currentlyStreaming.channel) return
+        let url = "https://twitch.tv/" + this.currentlyStreaming.channel
+        window.open(url, '_blank').focus()
+      },
       formattedDay(day) {
         return day.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)
       },
@@ -69,19 +78,14 @@
       streamersOnDay(day) {
         return this.schedule.filter(s => day.contains(DateTime.fromISO(s.starting).toLocal()))
       },
-      isStreaming(streamer) {
-        let streamerStarting = DateTime.fromISO(streamer.starting)
-        let streamerSlot = Interval.fromDateTimes(streamerStarting, streamerStarting.plus({ hours: streamer.duration }))
-        // For testing: return streamerSlot.contains(DateTime.fromISO("2021-09-10T17:01:00Z"))
-        return streamerSlot.contains(DateTime.now())
-      }
     },
   }
 </script>
 
 <style>
   .streaming {
-    background-color: rgba(234, 63, 247, 0.5);
+    background-color: rgba(234, 63, 247, 0.5) !important;
+    cursor: pointer;
   }
 
   .dateHeader {

@@ -19,7 +19,7 @@
 </template>
 
 <script>
-  import {DateTime, Interval} from "luxon";
+  import {DateTime} from "luxon";
   import Streamer from "./Streamer";
 
   export default {
@@ -27,38 +27,18 @@
 
 
     data: () => ({
-      currentlyStreaming: undefined,
-      upNext: undefined
     }),
 
     components: {
       Streamer
     },
 
-    props: ['schedule'],
+    props: ['schedule', 'currentlyStreaming', 'upNext'],
 
     mounted: function () {
-      this.updateCurrentlyStreaming()
-      this.updateStreaming()
     },
 
     methods: {
-      updateStreaming() {
-        setInterval(() => {
-          this.updateCurrentlyStreaming()
-        }, 15000)
-      },
-      updateCurrentlyStreaming: function () {
-        for (let i = 0; i < this.schedule.length; i++) {
-          let s = this.schedule[i]
-          let streamerStarting = DateTime.fromISO(s.starting)
-          let streamerSlot = Interval.fromDateTimes(streamerStarting, streamerStarting.plus({ hours: s.duration }))
-          if (streamerSlot.contains(DateTime.now())) {
-            this.currentlyStreaming = s
-            this.upNext = (this.schedule.length > (i + 1)) ? this.schedule[i + 1] : undefined
-          }
-        }
-      },
       toSimpleTime(starting) {
         return DateTime.fromISO(starting).toLocal().toLocaleString(DateTime.TIME_SIMPLE)
       }

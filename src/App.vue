@@ -14,7 +14,7 @@
         <v-row>
           <v-col offset-md="2" md="8" cols="12">
             <Countdown v-if="startDate && timeLeft && timeLeft.length('milliseconds') > 0" :timeLeft="timeLeft" />
-            <CurrentlyStreaming v-else :schedule="schedule" />
+            <CurrentlyStreaming v-else :schedule="schedule" :currentlyStreaming="currentlyStreaming" :upNext="upNext" />
           </v-col>
         </v-row>
         <v-row>
@@ -36,7 +36,7 @@
         </v-row>
         <v-row>
           <v-col offset-md="2" md="8" cols="12">
-            <Schedule v-if="schedule && startDate && endDate" :schedule="schedule" :startDate="startDate" :endDate="endDate"/>
+            <Schedule v-if="schedule && startDate && endDate" :schedule="schedule" :startDate="startDate" :endDate="endDate" :currentlyStreaming="currentlyStreaming"/>
           </v-col>
         </v-row>
       </v-container>
@@ -72,6 +72,8 @@ export default {
     startDate: undefined,
     endDate: undefined,
     timeLeft: undefined,
+    currentlyStreaming: undefined,
+    upNext: undefined,
     streamers: [
       {
         channel: 'ToneHack',
@@ -321,11 +323,29 @@ export default {
           this.timeLeft = Interval.fromDateTimes(DateTime.now(), this.startDate)
         }
       }, 1000)
-    }
+    },
+    updateStreaming() {
+      setInterval(() => {
+        this.updateCurrentlyStreaming()
+      }, 15000)
+    },
+    updateCurrentlyStreaming: function () {
+      for (let i = 0; i < this.schedule.length; i++) {
+        let s = this.schedule[i]
+        let streamerStarting = DateTime.fromISO(s.starting)
+        let streamerSlot = Interval.fromDateTimes(streamerStarting, streamerStarting.plus({ hours: s.duration }))
+        if (streamerSlot.contains(DateTime.now())) {
+          this.currentlyStreaming = s
+          this.upNext = (this.schedule.length > (i + 1)) ? this.schedule[i + 1] : undefined
+        }
+      }
+    },
   },
 
   mounted: function () {
     this.startCountDown()
+    this.updateCurrentlyStreaming()
+    this.updateStreaming()
   },
 
 };
