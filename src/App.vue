@@ -3,26 +3,22 @@
     <v-main>
       <v-container>
         <v-row>
-          <v-col cols="2"></v-col>
-          <v-col cols="8">
+          <v-col offset-md="2" md="8" cols="12">
             <v-img
                 alt="NetHackathon Logo"
                 src="./assets/logo1.png"
                 width="100%"
             />
           </v-col>
-          <v-col cols="2"></v-col>
         </v-row>
         <v-row>
-          <v-col cols="2"></v-col>
-          <v-col cols="8">
-            <Countdown />
+          <v-col offset-md="2" md="8" cols="12">
+            <Countdown v-if="startDate && timeLeft && timeLeft.length('milliseconds') > 0" :timeLeft="timeLeft" />
+            <h1 v-else>The event has started!</h1>
           </v-col>
-          <v-col cols="2"></v-col>
         </v-row>
         <v-row>
-          <v-col cols="2"></v-col>
-          <v-col cols="8">
+          <v-col offset-md="2" md="8" cols="12">
             <h3 class="lead mb-4 text-justify">
               On <strong>September 10 - 12</strong>, twenty-two Twitch content creators will stream NetHack continuously
               for over 56 hours!
@@ -37,7 +33,6 @@
                 :streamersLength="streamers.length"/>.
             </p>
           </v-col>
-          <v-col cols="2"></v-col>
         </v-row>
       </v-container>
     </v-main>
@@ -48,6 +43,7 @@
 
 import Streamer from "./components/Streamer";
 import Countdown from "./components/Countdown";
+import {DateTime, Interval} from "luxon";
 
 export default {
   name: 'App',
@@ -57,13 +53,20 @@ export default {
     Streamer
   },
 
+  created: function () {
+    this.startDate = DateTime.fromISO('2021-09-10T17:00:00.000', {zone: 'utc'})
+    this.timeLeft = Interval.fromDateTimes(DateTime.now(), this.startDate)
+  },
+
   data: () => ({
+    startDate: undefined,
+    timeLeft: undefined,
     streamers: [
       {
         channel: 'ToneHack',
         starting: '2021-09-10T17:00:00Z',
         length: 4,
-        featured: true
+        featured: false
       },
       {
         channel: 'JJvanTheMan',
@@ -142,7 +145,7 @@ export default {
         channel: 'Diggitysc',
         starting: '2021-09-12T03:00:00Z',
         length: 2,
-        featured: true
+        featured: false
       },
       {
         channel: 'toddrafter',
@@ -173,7 +176,7 @@ export default {
         channel: 'luxidream',
         starting: '2021-09-12T17:00:00Z',
         length: 3,
-        featured: true
+        featured: false
       },
       {
         channel: 'theyflower',
@@ -208,7 +211,21 @@ export default {
         return 0
       })
     }
+  },
 
-  }
+  methods: {
+    startCountDown: function () {
+      setInterval(() => {
+        if (this.startDate && this.timeLeft) {
+          this.timeLeft = Interval.fromDateTimes(DateTime.now(), this.startDate)
+        }
+      }, 1000)
+    }
+  },
+
+  mounted: function () {
+    this.startCountDown()
+  },
+
 };
 </script>
