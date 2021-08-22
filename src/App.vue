@@ -318,10 +318,10 @@ export default {
   computed: {
     streamersByName () {
       return this.streamers.slice().sort((a, b) => {
-        if (a.channel < b.channel) {
+        if (a.channel.toLowerCase() < b.channel.toLowerCase()) {
           return -1
         }
-        if (b.channel < a.channel) {
+        if (b.channel.toLowerCase() < a.channel.toLowerCase()) {
           return 1
         }
         return 0
