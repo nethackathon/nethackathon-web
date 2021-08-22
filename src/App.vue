@@ -25,13 +25,18 @@
             </h3>
             <p class="lead mb-4 text-justify">
               Streamers include, <Streamer
-                v-for="(streamer, index) in sortedStreamers"
+                v-for="(streamer, index) in streamersByName"
                 v-bind:key="streamer.channel"
                 :streamer="streamer"
                 :index="index"
                 :concatenate="true"
                 :streamersLength="streamers.length"/>.
             </p>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col offset-md="2" md="8" cols="12">
+            <Schedule v-if="schedule && startDate && endDate" :schedule="schedule" :startDate="startDate" :endDate="endDate"/>
           </v-col>
         </v-row>
       </v-container>
@@ -44,163 +49,257 @@
 import Streamer from "./components/Streamer";
 import Countdown from "./components/Countdown";
 import {DateTime, Interval} from "luxon";
+import Schedule from "./components/Schedule";
 
 export default {
   name: 'App',
 
   components: {
+    Schedule,
     Countdown,
     Streamer
   },
 
   created: function () {
     this.startDate = DateTime.fromISO('2021-09-10T17:00:00.000', {zone: 'utc'})
+    this.endDate = DateTime.fromISO('2021-09-13T04:00:00.000', {zone: 'utc'})
     this.timeLeft = Interval.fromDateTimes(DateTime.now(), this.startDate)
   },
 
   data: () => ({
     startDate: undefined,
+    endDate: undefined,
     timeLeft: undefined,
     streamers: [
       {
         channel: 'ToneHack',
+        featured: false
+      },
+      {
+        channel: 'JJvanTheMan',
+        featured: false
+      },
+      {
+        channel: 'Cloudmillion',
+        featured: false
+      },
+      {
+        channel: 'LythariDrow',
+        featured: false
+      },
+      {
+        channel: 'kougyoku_gentou',
+        featured: false
+      },
+      {
+        channel: 'Priestess_of_Athe',
+        featured: false
+      },
+      {
+        channel: 'ichbinmiah',
+        featured: false
+      },
+      {
+        channel: 'AmericanElm',
+        featured: false
+      },
+      {
+        channel: 'KitsukoKi',
+        featured: false
+      },
+      {
+        channel: 'MeatPowersTV',
+        featured: false
+      },
+      {
+        channel: 'aoeixsz4',
+        featured: false
+      },
+      {
+        channel: 'PeteGoz',
+        featured: false
+      },
+      {
+        channel: 'Antigulp',
+        featured: false
+      },
+      {
+        channel: 'Diggitysc',
+        featured: false
+      },
+      {
+        channel: 'toddrafter',
+        featured: false
+      },
+      {
+        channel: 'ashpooljohn',
+        featured: false
+      },
+      {
+        channel: 'finitelycraig',
+        featured: false
+      },
+      {
+        channel: 'QueenXerxes',
+        featured: false
+      },
+      {
+        channel: 'luxidream',
+        featured: false
+      },
+      {
+        channel: 'theyflower',
+        featured: false
+      },
+      {
+        channel: 'd_i_s_p_e_r_s_e',
+        featured: false
+      },
+      {
+        channel: 'shadowrider38',
+        featured: false
+      },
+    ],
+    schedule: [
+      {
+        channel: 'ToneHack',
         starting: '2021-09-10T17:00:00Z',
-        length: 4,
+        duration: 4,
         featured: false
       },
       {
         channel: 'JJvanTheMan',
         starting: '2021-09-10T21:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         channel: 'Cloudmillion',
         starting: '2021-09-11T00:00:00Z',
-        length: 2,
+        duration: 2,
         featured: false
       },
       {
         channel: 'LythariDrow',
         starting: '2021-09-11T02:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         channel: 'kougyoku_gentou',
         starting: '2021-09-11T05:00:00Z',
-        length: 1,
+        duration: 1,
         featured: false
       },
       {
         channel: 'Priestess_of_Athe',
         starting: '2021-09-11T06:00:00Z',
-        length: 1,
+        duration: 1,
         featured: false
       },
       {
         channel: 'ichbinmiah',
         starting: '2021-09-11T07:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         channel: 'AmericanElm',
         starting: '2021-09-11T10:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         channel: 'KitsukoKi',
         starting: '2021-09-11T13:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         channel: 'MeatPowersTV',
         starting: '2021-09-11T16:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         title: 'Speed run semi-finals featuring shadowrider38 and aoeixsz4!',
-        channel: 'aoeixsz4',
+        channel: 'luxidream',
         starting: '2021-09-11T19:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         channel: 'PeteGoz',
         starting: '2021-09-11T22:00:00Z',
-        length: 2,
+        duration: 2,
         featured: false
       },
       {
         channel: 'Antigulp',
         starting: '2021-09-12T00:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         channel: 'Diggitysc',
         starting: '2021-09-12T03:00:00Z',
-        length: 2,
+        duration: 2,
         featured: false
       },
       {
         channel: 'toddrafter',
         starting: '2021-09-12T05:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         channel: 'ashpooljohn',
         starting: '2021-09-12T08:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         channel: 'finitelycraig',
         starting: '2021-09-12T11:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         channel: 'QueenXerxes',
         starting: '2021-09-12T14:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         title: 'Speed run finals featuring luxidream and the winner of the semi-finals!',
         channel: 'luxidream',
         starting: '2021-09-12T17:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         channel: 'theyflower',
         starting: '2021-09-12T20:00:00Z',
-        length: 2,
+        duration: 2,
         featured: false
       },
       {
         channel: 'd_i_s_p_e_r_s_e',
         starting: '2021-09-12T22:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
       {
         channel: 'shadowrider38',
         starting: '2021-09-13T01:00:00Z',
-        length: 3,
+        duration: 3,
         featured: false
       },
     ]
   }),
 
   computed: {
-    sortedStreamers () {
+    streamersByName () {
       return this.streamers.slice().sort((a, b) => {
         if (a.channel < b.channel) {
           return -1
@@ -210,7 +309,7 @@ export default {
         }
         return 0
       })
-    }
+    },
   },
 
   methods: {
