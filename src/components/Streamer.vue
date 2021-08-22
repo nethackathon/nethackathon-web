@@ -1,6 +1,6 @@
 <template>
   <span>
-    <span v-bind:class="{featured: streamer.featured}"><a class="streamer" :href="channelHref">{{streamer.channel}}</a></span><span v-if="concatenate && index < streamersLength - 2">, </span><span v-if="concatenate && index === streamersLength - 2">, and </span>
+    <span v-bind:class="{featured: streamer.featured}"><a class="streamer" :href="channelHref" target="_blank">{{streamer.channel}}</a></span><span v-if="concatenate && index < streamersLength - 2">, </span><span v-if="concatenate && index === streamersLength - 2">, and </span>
   </span>
 </template>
 
