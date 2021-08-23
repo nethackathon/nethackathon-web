@@ -1,17 +1,21 @@
 <template>
   <v-app>
     <v-main>
+      <div class="djinni nethack" v-if="djinniVisible">
+        &
+      </div>
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
           <div
               v-bind="attrs"
               v-on="on"
               @click="clickLamp"
-              class="magic-lamp">
+              @mousemove="rubLamp"
+              class="magic-lamp nethack">
             )
           </div>
         </template>
-        <span>You see here a magic lamp.</span>
+        <span>{{lampMessage}}</span>
       </v-tooltip>
       <v-container>
         <v-row class="mt-5">
@@ -82,6 +86,9 @@ export default {
   },
 
   data: () => ({
+    djinniVisible: false,
+    rubbed: 0,
+    lampMessage: 'You see here a magic lamp.',
     startDate: undefined,
     endDate: undefined,
     timeLeft: undefined,
@@ -330,11 +337,36 @@ export default {
   },
 
   methods: {
-    clickLamp: function () {
+    rubLamp: function () {
+      this.rubbed++
+      if (this.rubbed % 100 === 0 && !this.djinniVisible) {
+        this.lampMessage = 'You see a puff of smoke.'
+      }
+      if (this.rubbed % 157 === 0 && !this.djinniVisible) {
+        this.lampMessage = 'You see here a magic lamp.'
+      }
+      if (this.rubbed % 1337 === 0 && !this.djinniVisible) {
+        this.djinniVisible = true
+        const random = Math.random()
+        if (random < 0.2) {
+          this.lampMessage = "I am in your debt. I will grant one wish!"
+        } else if (random < 0.4) {
+          this.lampMessage = "Thank you for freeing me!"
+        } else if (random < 0.6) {
+          this.lampMessage = "You freed me!"
+        } else if (random < 0.8) {
+          this.lampMessage = "It is about time!"
+        } else {
+          this.lampMessage = "You disturbed me, fool!"
+        }
+      }
+    },
+    clickLamp: function (evt) {
       let dark = (localStorage.getItem('dark') === undefined) ? 'off' : localStorage.getItem('dark')
       dark = (dark === 'off') ? 'on' : 'off'
       localStorage.setItem('dark', dark)
       this.$vuetify.theme.dark = (dark === 'off')
+      evt.preventDefault()
     },
     startCountDown: function () {
       setInterval(() => {
@@ -372,19 +404,29 @@ export default {
 
 <style>
   .magic-lamp {
-    position: fixed;
     bottom: 10px;
     right: 10px;
+    cursor: pointer;
+    padding-left: 0.2em;
+  }
+  .djinni {
+    bottom: 85px;
+    right: 10px;
+  }
+  .nethack {
+    position: fixed;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background: #121212;
+    width: 75px;
+    height: 75px;
+    text-align: center;
+    line-height: 75px;
     color: #FFFF55;
     font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
     font-size: xxx-large;
     font-weight: bolder;
-    cursor: pointer;
-    background: #121212;
-    width: 1.2em;
-    height: 1.2em;
-    text-align: center;
-    line-height: 1.2em;
-    padding-left: 0.2em;
   }
 </style>
