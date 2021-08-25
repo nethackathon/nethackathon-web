@@ -12,7 +12,7 @@
               @click="clickLamp"
               @mousemove="rubLamp"
               class="magic-lamp nethack">
-            )
+            (
           </div>
         </template>
         <span>{{lampMessage}}</span>
