@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Schedule</h1>
+    <h1>Schedule <span style="font-size: small;">All times {{localTimeZone}}</span></h1>
     <v-simple-table>
       <template v-slot:default>
         <thead>
@@ -52,6 +52,9 @@
     props: ['schedule', 'startDate', 'endDate', 'currentlyStreaming'],
 
     computed: {
+      localTimeZone: function () {
+        return DateTime.local().offsetNameShort
+      },
       daysInLocal: function () {
         let startDate = DateTime.fromISO(this.startDate).toLocal()
         let endDate = DateTime.fromISO(this.endDate).toLocal()

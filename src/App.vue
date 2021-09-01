@@ -407,7 +407,6 @@ export default {
     bottom: 10px;
     right: 10px;
     cursor: pointer;
-    padding-left: 0.2em;
   }
   .djinni {
     bottom: 85px;
