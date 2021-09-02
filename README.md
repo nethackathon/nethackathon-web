@@ -1,5 +1,11 @@
 # nethackathon-vue
 
+## TODO
+- Modify build script to insert no_script.html, with schedule from generate_schedule.js, into generated index.html
+- Think through separating out streamers and schedule, some schedule items have multiple streamers but only one channel 
+- Insert data into database
+- Finish Annotate view
+
 ## Project setup
 ```
 npm install
