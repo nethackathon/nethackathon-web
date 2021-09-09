@@ -54,9 +54,15 @@ export default [
         featured: false
     },
     {
-        channel: 'MeatPowersTV',
+        channel: 'watchingugo',
         starting: '2021-09-11T16:00:00Z',
-        duration: 3,
+        duration: 2,
+        featured: false
+    },
+    {
+        channel: 'luxidream',
+        starting: '2021-09-11T18:00:00Z',
+        duration: 1,
         featured: false
     },
     {

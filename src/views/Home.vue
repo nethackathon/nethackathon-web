@@ -31,6 +31,7 @@
                 :concatenate="true"
                 :streamersLength="streamers.length"/>.
             </p>
+            <p>Don't want to read a schedule? The current streamer is also hosted at <a href="https://twitch.tv/nethackathon">https://twitch.tv/nethackathon</a></p>
           </v-col>
         </v-row>
         <v-row>

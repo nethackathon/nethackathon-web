@@ -1,5 +1,9 @@
 export default [
     {
+        channel: 'watchingugo',
+        featured: false
+    },
+    {
         channel: 'ToneHack',
         featured: false
     },
