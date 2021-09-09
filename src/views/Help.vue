@@ -86,8 +86,7 @@ export default {
           type CTRL-X to exit and type \`Y\` and enter to confirm and save. </p>
           <p>If you already have a good configuration set up on a server like hardfought, browse for the location of your
           configuration file <a href="https://www.hardfought.org/nethack/userdata/">here</a>. Once you find the URL of
-          your configuration file type the following in your home directory: \`wget https://www.hardfought.org/userdata/d/disperse/nethack/disperse.nhrc -O .nethackrc\`
-          (replacing the URL with the one you want to copy).</p>
+          your configuration file type the following in your home directory: \`wget [url of your config] -O .nethackrc\`.</p>
         `
       },
     ]
