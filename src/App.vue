@@ -2,7 +2,7 @@
   <v-app>
     <v-main>
       <v-container>
-        <v-row>
+        <v-row class="mt-5">
           <v-col offset-md="2" md="8" cols="12">
             <v-img
                 alt="NetHackathon Logo"
@@ -14,7 +14,7 @@
         <v-row>
           <v-col offset-md="2" md="8" cols="12">
             <Countdown v-if="startDate && timeLeft && timeLeft.length('milliseconds') > 0" :timeLeft="timeLeft" />
-            <h1 v-else>The event has started!</h1>
+            <CurrentlyStreaming v-else :schedule="schedule" />
           </v-col>
         </v-row>
         <v-row>
@@ -50,6 +50,7 @@ import Streamer from "./components/Streamer";
 import Countdown from "./components/Countdown";
 import {DateTime, Interval} from "luxon";
 import Schedule from "./components/Schedule";
+import CurrentlyStreaming from "./components/CurrentlyStreaming";
 
 export default {
   name: 'App',
@@ -57,7 +58,8 @@ export default {
   components: {
     Schedule,
     Countdown,
-    Streamer
+    Streamer,
+    CurrentlyStreaming
   },
 
   created: function () {

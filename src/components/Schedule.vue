@@ -6,7 +6,7 @@
         <thead>
         <tr>
           <th class="text-left">
-            Scheduled
+            Date
           </th>
           <th class="text-left">
             Channel
@@ -67,7 +67,6 @@
         return DateTime.fromISO(start).toLocaleString(DateTime.TIME_SIMPLE)
       },
       streamersOnDay(day) {
-        console.log('day', day)
         return this.schedule.filter(s => day.contains(DateTime.fromISO(s.starting).toLocal()))
       },
       isStreaming(streamer) {
