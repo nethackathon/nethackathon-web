@@ -63,7 +63,6 @@ export default {
   },
 
   created: function () {
-    this.$vuetify.theme.dark = (localStorage.getItem('dark') === undefined) ? true : (localStorage.getItem('dark') === 'off')
     this.startDate = DateTime.fromISO('2021-09-10T17:00:00.000', {zone: 'utc'})
     this.endDate = DateTime.fromISO('2021-09-13T04:00:00.000', {zone: 'utc'})
     this.timeLeft = Interval.fromDateTimes(DateTime.now(), this.startDate)

@@ -25,6 +25,10 @@
 export default {
   name: 'App',
 
+  created: function () {
+    this.$vuetify.theme.dark = (localStorage.getItem('dark') === undefined) ? true : (localStorage.getItem('dark') === 'off')
+  },
+
   data: () => ({
     djinniVisible: false,
     rubbed: 0,
