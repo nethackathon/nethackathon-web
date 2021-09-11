@@ -24,15 +24,9 @@ export default [
         featured: false
     },
     {
-        channel: 'kougyoku_gentou',
-        starting: '2021-09-11T05:00:00Z',
-        duration: 1,
-        featured: false
-    },
-    {
         channel: 'Priestess_of_Athe',
-        starting: '2021-09-11T06:00:00Z',
-        duration: 1,
+        starting: '2021-09-11T05:00:00Z',
+        duration: 2,
         featured: false
     },
     {
