@@ -89,6 +89,17 @@ export default {
           your configuration file type the following in your home directory: \`wget [url of your config] -O .nethackrc\`.</p>
         `
       },
+      {
+        question: `What's this I hear about a NetHack Twitch bot?`,
+        answer: `
+        <p>finitelycraig has programmed up a bot for us to use, just head to
+        <a href="https://www.twitch.tv/oracleofdelphibot">https://www.twitch.tv/oracleofdelphibot</a> and type !join
+        in chat there.  The bot then joins your channel.</p>
+        <p>You may want to make oracleofdelphibot a mod for the usual reasons of message frequency and links.  Now in
+        your chat try typing !commands to see what the bot can do for you.</p>
+        <p>If you want the bot to leave your chat type !oracle-depart in your chat (though it automatically disconnects from offline channels).</p>
+        `
+      },
     ]
   }),
 
@@ -106,6 +117,6 @@ export default {
 
 <style>
   .answer {
-    margin-bottom: 1em;
+    padding-bottom: 1em;
   }
 </style>
