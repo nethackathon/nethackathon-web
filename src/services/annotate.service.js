@@ -1,17 +1,31 @@
-const apiRoute = 'https://nethackathon.org/annotate'
-const axios = require('axios');
+import {readOnline, resetOnline, updateOnline} from "./annotate.online.service"
+import {readOffline, resetOffline, updateOffline} from "./annotate.offline.service"
+
+function isLoggedIn() {
+    return (localStorage.getItem('nethackathon-jwt') !== null)
+}
 
 export async function update (data) {
-    const res = await axios.post(apiRoute, data)
-    return res.data
+    if (isLoggedIn()) {
+        return await updateOnline(data)
+    } else {
+        return updateOffline(data)
+    }
 }
 
 export async function read () {
-    const res = await axios.get(apiRoute)
-    return res.data
+    if (isLoggedIn()) {
+        return readOnline()
+    } else {
+        return readOffline()
+    }
 }
 
 export async function reset () {
-    const res = await axios.delete(apiRoute)
-    return res.data
+    if (isLoggedIn()) {
+        return resetOnline()
+    } else {
+        return resetOffline()
+    }
 }
+

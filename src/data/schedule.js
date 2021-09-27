@@ -116,9 +116,15 @@ export default [
         featured: false
     },
     {
-        channel: 'theyflower',
+        channel: 'luxidream',
         starting: '2021-09-12T20:00:00Z',
-        duration: 2,
+        duration: 1,
+        featured: false
+    },
+    {
+        channel: 'Antigulp',
+        starting: '2021-09-12T21:00:00Z',
+        duration: 1,
         featured: false
     },
     {

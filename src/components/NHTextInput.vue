@@ -1,23 +1,23 @@
 <template>
   <div class="nh-input">
-    <label for="nh-input">Protection: </label>
+    <label for="nh-input">{{label}}: </label>
     <input
         :class="{nhDark: $vuetify.theme.dark, nhLight: !$vuetify.theme.dark}"
         id="nh-input"
-        type="number"
-        min="0"
-        max="99"
-        size="2"
-        :value="protection"
+        type="text"
+        :size="size"
+        :value="value"
+        :minlength="minlength"
+        :maxlength="maxlength"
         @change="changed"/>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'NHProtection',
+  name: 'NHTextInput',
 
-  props: ['protection'],
+  props: ['value', 'label', 'size', 'minlength', 'maxlength'],
 
     data: () => ({
     }),
@@ -42,5 +42,9 @@ export default {
 }
 .nh-input {
   font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
+}
+input {
+  outline: 0;
+  border-bottom: 1px solid #666;
 }
 </style>

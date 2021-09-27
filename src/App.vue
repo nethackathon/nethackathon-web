@@ -26,7 +26,7 @@ export default {
   name: 'App',
 
   created: function () {
-    this.$vuetify.theme.dark = (localStorage.getItem('dark') === undefined) ? true : (localStorage.getItem('dark') === 'off')
+    this.$vuetify.theme.dark = (localStorage.getItem('dark') === null) ? true : (localStorage.getItem('dark') === 'off')
   },
 
   data: () => ({
@@ -61,7 +61,7 @@ export default {
       }
     },
     clickLamp: function (evt) {
-      let dark = (localStorage.getItem('dark') === undefined) ? 'off' : localStorage.getItem('dark')
+      let dark = (localStorage.getItem('dark') === null) ? 'off' : localStorage.getItem('dark')
       dark = (dark === 'off') ? 'on' : 'off'
       localStorage.setItem('dark', dark)
       this.$vuetify.theme.dark = (dark === 'off')

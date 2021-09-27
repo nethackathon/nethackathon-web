@@ -1,9 +1,12 @@
 <template>
   <div class="colorPicker">
-    <div
-        @click="togglePicker"
-        class="colorSquare"
-        :style="{backgroundColor: color}">
+    <div>
+      <span>Color: </span>
+      <div
+          @click="togglePicker"
+          class="colorSquare"
+          :style="{backgroundColor: color}">
+    </div>
     </div>
     <div class="picker" v-if="showPicker">
       <div
@@ -52,8 +55,10 @@
     position: relative;
   }
   .colorSquare {
+    display: inline-block;
     width: 30px;
     height: 20px;
+    line-height: 20px;
   }
   .picker {
     position: absolute;

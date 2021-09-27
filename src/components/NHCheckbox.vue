@@ -1,6 +1,11 @@
 <template>
-  <div class="nh-checkbox" @click="clickCheck">
-    <span v-html="check" /> <span>{{label}}</span>
+  <div>
+    <div class="nh-text nh-checkbox" @click="clickCheck">
+      <span v-html="check" /> <span>{{label}}</span>
+    </div>
+    <div v-if="hint">
+      <span class="nh-text nh-text-small">{{hint}}</span>
+    </div>
   </div>
 </template>
 
@@ -8,14 +13,13 @@
 export default {
   name: 'NHCheckbox',
 
-  props: ['checked', 'label'],
+  props: ['checked', 'label', 'hint'],
 
     data: () => ({
     }),
 
     computed: {
       check () {
-        console.log('this.checked', this.checked)
         return (this.checked) ? `[X]` : `[&nbsp;]`
       }
     },
@@ -30,8 +34,13 @@ export default {
 </script>
 
 <style>
+.nh-text {
+  font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
+}
+.nh-text-small {
+  font-size: small;
+}
 .nh-checkbox {
   cursor: pointer;
-  font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
 }
 </style>
