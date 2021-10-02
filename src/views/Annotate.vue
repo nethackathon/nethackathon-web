@@ -1,7 +1,7 @@
 <template>
   <v-container fluid id="annotate">
     <v-row>
-      <v-col cols="8">
+      <v-col cols="6">
         <span
             v-for="tab in tabs"
             v-bind:key="tab"
@@ -9,7 +9,7 @@
             @click="selectedTab = tab"
             class="nh-tab nh-clickable nh-textarea">{{tab}}</span>
       </v-col>
-      <v-col cols="4" class="text-right">
+      <v-col cols="6" class="text-right">
         <span v-if="loggedIn">Logged in as {{loggedInAs}} <span class="nh-link nh-clickable" @click="logOut">Log out</span></span>
         <span v-if="!loggedIn">Storing data in local storage, to use the server, <span class="nh-link nh-clickable" href="#" @click="showLoginModal = true">Log in</span></span>
       </v-col>
@@ -57,6 +57,11 @@
         <NHPriceId :cha="localData.cha" :is-tourist="localData.touristCapShirt" />
       </v-col>
     </v-row>
+    <v-row v-if="selectedTab === 'Sokoban'">
+      <v-col>
+        <Sokoban />
+      </v-col>
+    </v-row>
     <v-row>
       <v-col>
         <v-divider class="mt-5 mb-16"/>
@@ -81,6 +86,7 @@ import NHNumber from "../components/NHNumber";
 import NHButton from "../components/NHButton";
 import NHPriceId from "../components/NHPriceId";
 import NHLogin from "../components/NHLogin";
+import Sokoban from "../components/sokoban/Sokoban";
 
 export default {
   name: 'Annotate',
@@ -96,6 +102,7 @@ export default {
     NHCheckbox,
     NHPriceId,
     NHLogin,
+    Sokoban,
   },
 
   mounted: async function () {
@@ -109,8 +116,8 @@ export default {
     localData: {},
     passwordCharacter: 'a',
     passwordColor: PALETTE[Math.floor(Math.random() * PALETTE.length)],
-    selectedTab: 'Price ID',
-    tabs: ['Intrinsics', 'Notes', 'Price ID'],
+    selectedTab: 'Intrinsics',
+    tabs: ['Intrinsics', 'Notes', 'Price ID', 'Sokoban'],
     debounce,
   }),
 
