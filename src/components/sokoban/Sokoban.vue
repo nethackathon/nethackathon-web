@@ -106,6 +106,7 @@ export default {
       travelPosition: {x: -1, y: -1},
       travelError: '',
       travelPath: [],
+      calcDistanceArray: [],
       timerInterval: null,
       timeStarted: 0,
       timeElapsed: 0,
@@ -294,7 +295,10 @@ export default {
             if (travellingTo.distance === undefined || travellingTo.distance > dist) {
               travellingTo.distance = dist + 1
             }
-            this.calcDistance({x: (pos.x + dx), y: (pos.y + dy)}, travellingTo.distance)
+            this.calcDistanceArray.push({
+              pos: {x: (pos.x + dx), y: (pos.y + dy)},
+              distance: travellingTo.distance
+            })
           }
         }
       }
@@ -316,7 +320,14 @@ export default {
         }
       }
       this.map[this.playerPosition.y][this.playerPosition.x].distance = 0
-      this.calcDistance(this.playerPosition, 0)
+      this.calcDistanceArray.push({
+        pos: this.playerPosition,
+        distance: 0
+      })
+      while(this.calcDistanceArray.length > 0) {
+        let nextPos = this.calcDistanceArray.pop()
+        this.calcDistance(nextPos.pos, nextPos.distance)
+      }
       if (this.map[this.travelPosition.y][this.travelPosition.x].distance !== undefined) {
         let curPos = {x: this.travelPosition.x, y: this.travelPosition.y }
         this.travelPath.push(curPos)

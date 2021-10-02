@@ -20,7 +20,7 @@ export default {
     symbol: function () {
       /*
       if (this.distance !== undefined) {
-        return '' + this.distance
+        return (this.distance > 9) ? 'X' : this.distance + ''
       }
        */
       if (this.player) {
