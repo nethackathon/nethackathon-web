@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="nh-text nh-checkbox" @click="clickCheck">
+    <div class="nh-text nh-checkbox d-inline" @click="clickCheck">
       <span v-html="check" /> <span :title="hint">{{label}}</span>
     </div>
   </div>
