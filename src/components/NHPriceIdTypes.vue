@@ -1,6 +1,6 @@
 <template>
   <div class="nh-item-type">
-    <span v-for="type in types" v-bind:key="type.symbol" :style="'color: ' + type.color + ';'" :title="type.notes">
+    <span class="nh-item-symbol" v-for="type in types" v-bind:key="type.symbol" :style="'color: ' + type.color + ';'" :title="type.notes">
       {{type.symbol}}&nbsp;
     </span>
   </div>
@@ -33,11 +33,13 @@ export default {
 
 <style>
 .nh-item-type {
-  cursor: pointer;
   font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
   font-weight: bolder;
   background-color: #121212;
   padding-left: 0.5em;
   padding-right: 0.5em;
+}
+.nh-item-symbol {
+  cursor: pointer;
 }
 </style>

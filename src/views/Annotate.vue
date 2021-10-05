@@ -1,5 +1,10 @@
 <template>
   <v-container fluid id="annotate">
+    <v-row cols="12">
+      <v-col>
+        <h1>#annotate <small>- Your NetHack companion app</small></h1>
+      </v-col>
+    </v-row>
     <v-row>
       <v-col cols="6">
         <span
@@ -41,20 +46,30 @@
     </v-row>
     <v-row v-if="selectedTab === 'Price ID'">
       <v-col>
-        <NHNumber
-            :value="localData.cha"
-            min="1"
-            max="25"
-            label="cha"
-            @changed="updateCha"
-          />
-        <NHCheckbox
-            @clicked="updateTourist"
-            :checked="localData.touristCapShirt"
-            label="Dupe?*"
-            hint="(* Are you a tourist below level 15, or are wearing a dunce cap, or are wearing a visible shirt?)"
+        <div class="mb-3">
+          <div style="display: inline-block; margin-right: 2em;">
+            <NHNumber
+                :value="localData.cha"
+                min="1"
+                max="25"
+                label="Ch"
+                @changed="updateCha"
+            />
+          </div>
+          <div style="display: inline-block;">
+            <NHCheckbox
+                @clicked="updateTourist"
+                :checked="localData.touristCapShirt"
+                label="Dupe?*"
+                hint="* Are you a tourist below level 15, or are wearing a dunce cap, or are wearing a visible shirt?"
+            />
+          </div>
+        </div>
+        <NHPriceId
+            :cha="localData.cha"
+            :is-tourist="localData.touristCapShirt"
+            :dark-mode="this.$vuetify.theme.dark"
         />
-        <NHPriceId :cha="localData.cha" :is-tourist="localData.touristCapShirt" />
       </v-col>
     </v-row>
     <v-row v-if="selectedTab === 'Sokoban'">
@@ -180,6 +195,7 @@ export default {
 .nh-clickable {
   cursor: pointer;
   font-weight: bold;
+  text-decoration: underline;
 }
 .nh-modal {
   position: absolute;

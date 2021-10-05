@@ -6,6 +6,7 @@
 - Insert data into database
 - Finish Annotate view
 - Consider CloudFlare for DDoS protection
+- Highlight duplicate prices in Price ID table
 
 ## Project setup
 ```

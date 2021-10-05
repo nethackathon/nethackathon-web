@@ -1,6 +1,6 @@
 <template>
   <div class="nh-text">
-    <table>
+    <table :class="{darkMode}">
       <tr>
         <th>Sell</th><th>Buy</th><th>Base price</th><th>Item types</th>
       </tr>
@@ -21,13 +21,18 @@ import {fraction, multiply, round} from 'mathjs'
 export default {
   name: 'NHPriceId',
 
-  props: ['cha', 'isTourist'],
+  props: ['cha', 'isTourist', 'darkMode'],
 
   components: {
     NHPriceIdTypes
   },
 
     data: () => ({
+      highlights: [
+        'rgb(255, 157, 157)',
+        'rgb(157, 255, 157)',
+        'rgb(157, 157, 255)',
+      ],
       basePrices: [
         { price: 8, types: [ { symbol:'[', color: '#AA5500', notes: 'elven boots, kicking boots' } ] },
         { price: 20, types: [ { symbol:'?', color: '#FFF', notes: 'identify' } ] },
@@ -147,8 +152,11 @@ export default {
   font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
 }
 td, th {
-  padding-right: 1em;
-  padding-left: 1em;
+  font-weight: bold;
+  padding: 0.15em 0.7em;
+  border: 1px solid black;
+}
+table.darkMode td, table.darkMode th {
   border: 1px solid white;
 }
 table {

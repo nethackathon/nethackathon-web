@@ -1,74 +1,71 @@
 <template>
   <div id="sokoban" :class="{'invert':!this.$vuetify.theme.dark}">
-    <h1 v-if="!won">Sokoban Level {{ (this.curLevel + 1) + ((this.curSubLevel === 0) ? 'a' : 'b')}}</h1>
+    <h1>Sokoban Level {{ (this.curLevel + 1) + ((this.curSubLevel === 0) ? 'a' : 'b')}}</h1>
     <div>
-      <span v-if="travelError !== ''">{{travelError}}</span>
-      <span v-else-if="travelMode">Where do you want to travel to?</span>
-      <span v-else>&nbsp;</span>
+      <span>{{(message === ' ') ? '&nbsp;' : message}}</span>
+      <span class="ml-4">Turns: {{ curTurns }}</span>
+      <span class="ml-4">Time: {{ timeElapsed }}s</span>
     </div>
+    <NHPlaybackControls
+        v-if="replaying"
+        :dark-mode="this.$vuetify.theme.dark"
+        :speedMultiplier="replayControls.speedMultiplier"
+        :maxMultiplier="replayControls.speedMultipliers[replayControls.speedMultipliers.length - 1]"
+        :minMultiplier="replayControls.speedMultipliers[0]"
+        @play="replayControls.speedMultiplier = 1"
+        @stop="replayControls.speedMultiplier = 0"
+        @faster="replayFaster"
+        @slower="replaySlower"
+        :status="replayStatus"
+    />
     <Map
-        v-if="!won"
-        :map="map"
+        :sokoMap="sokoMap"
         :dark-mode="this.$vuetify.theme.dark"
         :boulder-char="'0'"
     />
-    <h3>Push R to restart.</h3>
-    <h1 v-if="won">YOU WIN!</h1>
+    <div class="mb-4">Push R to restart.</div>
     <div>
-      <div v-if="trackTurnsLocally" class="inline">
-        <h3>Scores</h3>
-        <div>
-          <ul>
-            <li>Turns: {{ curTurns }}</li>
-            <li>Best turns: {{ (bestTurns[curLevel][curSubLevel] === Number.MAX_SAFE_INTEGER) ? 'None' : bestTurns[curLevel][curSubLevel] }}</li>
-            <li>Time: {{ timeElapsed }}s</li>
-            <li>Best time: {{ (bestTime[curLevel][curSubLevel] === Number.MAX_SAFE_INTEGER) ? 'None' : bestTime[curLevel][curSubLevel] + 's' }}</li>
-          </ul>
-        </div>
-      </div>
       <div class="inline">
         <h3>Options</h3>
         <div>
           <NHCheckbox
-              @clicked="doBothSubLevels = !doBothSubLevels"
-              :checked="doBothSubLevels"
-              label="Do both sub-levels"
-          />
-        </div>
-        <div>
-          <NHCheckbox
               @clicked="flipHorizontally = !flipHorizontally"
               :checked="flipHorizontally"
-              label="Flip levels horizontally"
+              label="Flip horizontally"
           />
         </div>
         <div>
           <NHCheckbox
               @clicked="flipVertically = !flipVertically"
               :checked="flipVertically"
-              label="Flip levels vertically"
+              label="Flip vertically"
           />
         </div>
         <div>
           <NHCheckbox
               @clicked="flipRandomly = !flipRandomly"
               :checked="flipRandomly"
-              label="Flip levels randomly"
-          />
-        </div>
-        <div>
-          <NHCheckbox
-              @clicked="trackTurnsLocally = !trackTurnsLocally"
-              :checked="trackTurnsLocally"
-              label="Track score locally"
+              label="Flip randomly"
           />
         </div>
       </div>
       <div class="inline">
         <h3>Levels</h3>
         <ul>
-          <li v-for="level in levelListing" v-bind:key="level.name"><a href="#" @click="changeLevel(level)">{{level.name}}</a></li>
+          <li v-for="level in levelListing" v-bind:key="level.name"><span class="nh-clickable" @click="changeLevel(level)">{{level.name}}</span></li>
         </ul>
+      </div>
+      <div class="inline">
+        <h3>High Scores</h3>
+        <NHHighScores
+            v-if="filteredMyGames.length > 0"
+            :games="filteredMyGames"
+            @replayGame="replayGame"
+            :dark-mode="this.$vuetify.theme.dark"
+        />
+        <div v-else>
+          <p>No games found</p>
+        </div>
       </div>
     </div>
   </div>
@@ -78,23 +75,30 @@
 import Map from './components/Map.vue'
 import maps from './maps/maps'
 import NHCheckbox from '../NHCheckbox'
+import NHHighScores from "../NHHighScores";
+import NHPlaybackControls from "../NHPlaybackControls";
 
 export default {
   name: 'Sokoban',
   components: {
+    NHPlaybackControls,
+    NHHighScores,
     Map,
     NHCheckbox,
   },
   created () {
-    window.addEventListener('keydown', this.keyboardEvent);
+    window.addEventListener('keydown', this.keyboardEvent)
+    const mg = localStorage.getItem('myGames')
+    this.myGames = (mg === null) ? [] : JSON.parse(mg)
   },
   destroyed () {
-    window.removeEventListener('keydown', this.keyboardEvent);
+    window.removeEventListener('keydown', this.keyboardEvent)
   },
   mounted () {
-    this.loadOptions();
-    this.curSubLevel = (this.doBothSubLevels) ? 0 : Math.floor(Math.random() * maps[this.curLevel].length)
-    this.loadMap();
+    this.loadOptions()
+    this.curLevel = Math.floor(Math.random() * maps.length)
+    this.curSubLevel = Math.floor(Math.random() * maps[this.curLevel].length)
+    this.loadMap()
   },
   data () {
     return {
@@ -102,12 +106,14 @@ export default {
       bestTurns: [[Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]],
       bestTime: [[Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]],
       travelling: false,
+      replaying: false,
       travelMode: false,
       travelPosition: {x: -1, y: -1},
-      travelError: '',
+      message: ' ',
       travelPath: [],
       calcDistanceArray: [],
       timerInterval: null,
+      timerStarted: false,
       timeStarted: 0,
       timeElapsed: 0,
       moveTo: false,
@@ -115,82 +121,119 @@ export default {
       mapString: '',
       curLevel: 0,
       curSubLevel: 0,
-      doBothSubLevels: false,
       flipHorizontally: false,
       fh: false, // Tracking flipping horizontally as done by random separately
       flipVertically: false,
       fv: false, // Tracking flipping vertically as done by random separately
       flipRandomly: false,
-      map: [],
+      sokoMap: [],
       playerPosition: {x: -1, y: -1},
       won: false,
-      trackTurnsLocally: false
+      turnRecord: [],
+      myGames: [],
+      replayControls: {
+        path: [],
+        pathIndex: 0,
+        speed: 100,
+        speedMultiplier: 0,
+        speedMultipliers: [-5, -2, -1, -0.5, 0, 0.5, 1, 2, 5],
+        mapStates: [],
+      }
     }
   },
   computed: {
+    replayStatus () {
+      if (this.replayControls.speedMultiplier === 0) return 'Stopped'
+      return `Playing ${this.replayControls.speedMultiplier}X`
+    },
+    replaySpeed () {
+      if (this.replayControls.speedMultiplier === 0) return 0
+      return Math.abs(this.replayControls.speed / this.replayControls.speedMultiplier)
+    },
+    filteredMyGames () {
+      return this.myGames
+        .filter((g) => (g.level === this.curLevel && g.subLevel === this.curSubLevel))
+        .map((g, i) => {
+          return {
+            id: 'local_' + i,
+            player: 'You',
+            time: g.time,
+            turns: g.path.length,
+            path: g.path,
+          }
+        })
+    },
     levelListing () {
-      const listing = [];
+      const listing = []
       for (let i = 0; i < maps.length; i++) {
         for (let j = 0; j < maps[i].length; j++) {
           listing.push({
-            name: 'Sokoban Level ' + (i + 1) + ((j === 0) ? 'a' : 'b'),
+            name: 'Level ' + (i + 1) + ((j === 0) ? 'a' : 'b'),
             level: i,
             subLevel: j
           })
         }
       }
-      return listing;
+      return listing
     }
   },
   methods: {
+    replaySlower () {
+      let curIndex = this.replayControls.speedMultipliers.indexOf(this.replayControls.speedMultiplier)
+      curIndex--
+      curIndex = Math.max(0, curIndex)
+      this.replayControls.speedMultiplier = this.replayControls.speedMultipliers[curIndex]
+    },
+    replayFaster () {
+      let curIndex = this.replayControls.speedMultipliers.indexOf(this.replayControls.speedMultiplier)
+      curIndex++
+      curIndex = Math.min((this.replayControls.speedMultipliers.length - 1), curIndex)
+      this.replayControls.speedMultiplier = this.replayControls.speedMultipliers[curIndex]
+    },
     loadOptions () {
-      if (localStorage.getItem('doBothSubLevels') !== null) {
-        this.doBothSubLevels = (localStorage.getItem('doBothSubLevels') === 'true');
-      }
       if (localStorage.getItem('flipHorizontally') !== null) {
-        this.flipHorizontally = (localStorage.getItem('flipHorizontally') === 'true');
+        this.flipHorizontally = (localStorage.getItem('flipHorizontally') === 'true')
       }
       if (localStorage.getItem('flipVertically') !== null) {
-        this.flipVertically = (localStorage.getItem('flipVertically') === 'true');
+        this.flipVertically = (localStorage.getItem('flipVertically') === 'true')
       }
       if (localStorage.getItem('flipRandomly') !== null) {
-        this.flipRandomly = (localStorage.getItem('flipRandomly') === 'true');
-      }
-      if (localStorage.getItem('trackTurnsLocally') !== null) {
-        this.trackTurnsLocally = (localStorage.getItem('trackTurnsLocally') === 'true');
+        this.flipRandomly = (localStorage.getItem('flipRandomly') === 'true')
       }
       if (localStorage.getItem('bestTurns') !== null) {
-        this.bestTurns = JSON.parse(localStorage.getItem('bestTurns'));
+        this.bestTurns = JSON.parse(localStorage.getItem('bestTurns'))
       }
       if (localStorage.getItem('bestTime') !== null) {
-        this.bestTime = JSON.parse(localStorage.getItem('bestTime'));
+        this.bestTime = JSON.parse(localStorage.getItem('bestTime'))
       }
     },
     changeLevel (levelObject) {
-      this.curLevel = levelObject.level;
-      this.curSubLevel = levelObject.subLevel;
-      this.loadMap();
+      this.curLevel = levelObject.level
+      this.curSubLevel = levelObject.subLevel
+      this.loadMap()
     },
     loadMap () {
       // reset timer
-      clearInterval(this.timerInterval);
-      this.timerInterval = setInterval(() => this.timeElapsed = Math.round((Date.now() - this.timeStarted) / 1000), 1000);
-      this.curTurns = 0;
-      this.timeStarted = Date.now();
+      this.timeElapsed = 0
+      this.travelPath = []
+      this.message = 'Press any key to start timer.'
+      this.turnRecord = []
+      clearInterval(this.timerInterval)
+      this.curTurns = 0
       // reset win state
-      this.won = false;
-      let m = maps[this.curLevel][this.curSubLevel].slice();
+      this.won = false
+      let m = maps[this.curLevel][this.curSubLevel].slice()
       if (this.flipRandomly) {
-        this.fh = Math.random() < 0.5;
-        this.fv = Math.random() < 0.5;
+        this.fh = Math.random() < 0.5
+        this.fv = Math.random() < 0.5
       }
       if (this.fh) {
-        m = m.map((row) => row.split('').reverse().join(''));
+        m = m.map((row) => row.split('').reverse().join(''))
       }
       if (this.fv) {
         m = m.reverse()
       }
-      this.map = []
+      this.sokoMap = []
       for (let y = 0; y < m.length; y++) {
         let row = []
         for (let x = 0; x < m[y].length; x++) {
@@ -204,28 +247,29 @@ export default {
             visited: false
           })
         }
-        this.map.push(row)
+        this.sokoMap.push(row)
       }
       this.playerPosition = this.getPlayerPosition(m)
-      this.map[this.playerPosition.y][this.playerPosition.x].player = true
-      this.map[this.playerPosition.y][this.playerPosition.x].highlight = true
+      // this.travelPath.push(this.playerPosition)
+      this.sokoMap[this.playerPosition.y][this.playerPosition.x].player = true
+      this.sokoMap[this.playerPosition.y][this.playerPosition.x].highlight = true
     },
-    getPlayerPosition (map) {
-      for (let y = 0; y < map.length; y++) {
-        if (map[y].indexOf('>') > 0) {
-          return {x: (map[y].indexOf('>')), y};
+    getPlayerPosition (sokoMap) {
+      for (let y = 0; y < sokoMap.length; y++) {
+        if (sokoMap[y].indexOf('>') > 0) {
+          return {x: (sokoMap[y].indexOf('>')), y};
         }
       }
-      return {x: -1, y: -1};
+      return {x: -1, y: -1}
     },
-    charAt (map, x, y) {
-      return map[y][x].character
+    charAt (sokoMap, x, y) {
+      return sokoMap[y][x].character
     },
     getMoveTo(evt) {
-      return (evt.getModifierState('Control') || evt.getModifierState('Shift') || this.moveTo);
+      return (evt.getModifierState('Control') || evt.getModifierState('Shift') || this.moveTo)
     },
     getPushTo(evt) {
-      return evt.getModifierState('Shift');
+      return evt.getModifierState('Shift')
     },
     limit(pos, limit) {
       let ret = Math.max(pos, 0)
@@ -233,8 +277,15 @@ export default {
     },
     keyboardEvent (evt) {
       // console.log('evt', evt);
-      if (this.travelling) return
-      this.travelError = ''
+      if (! this.timerStarted) {
+        this.timerStarted = true
+        this.timeStarted = new Date()
+        this.timerInterval = setInterval(() => this.timeElapsed = Math.round((new Date().getTime() - this.timeStarted.getTime()) / 1000), 1000)
+      }
+      if (this.travelling || this.replaying) return
+      if (evt.key === 'r') this.loadMap();
+      if (this.won) return
+      this.message = ' '
       // Prevent window from scrolling when using the arrow keys
       if (evt.key === 'ArrowDown' || evt.key === 'ArrowUp' || evt.key === 'ArrowLeft' ||evt.key === 'ArrowRight') evt.preventDefault();
       if (evt.key === 'm' || evt.key === 'g') this.moveTo = true;
@@ -246,7 +297,6 @@ export default {
       if (evt.key === 'u' || evt.key === 'U' || evt.key === '9') this.move(1, -1, this.getMoveTo(evt), this.getPushTo(evt));
       if (evt.key === 'b' || evt.key === 'B' || evt.key === '1') this.move(-1, 1, this.getMoveTo(evt), this.getPushTo(evt));
       if (evt.key === 'n' || evt.key === 'N' || evt.key === '3') this.move(1, 1, this.getMoveTo(evt), this.getPushTo(evt));
-      if (evt.key === 'r') this.loadMap();
       if (evt.key === '_') {
         this.setTravelMode(true)
       }
@@ -255,43 +305,118 @@ export default {
       }
       if (evt.key === '.' && this.travelMode) {
         if (this.travelTo()) {
-          this.travelling = true
-          this.travel().then(() => this.travelling = false)
+          this.travel(this.travelPath, 10).then(() => {
+            this.travelPath = []
+          })
         } else {
-          this.travelError = 'No travel path'
+          this.message = 'No travel path'
         }
         this.setTravelMode(false)
       }
     },
-    async travel() {
+    async travel(path, ms) {
+      this.travelling = true
       return new Promise(resolve => {
+        let p = path.slice()
         let travelTimer = window.setInterval(() => {
-          if (this.travelPath.length > 0) {
-            let pos = this.travelPath.pop()
+          if (p.length > 0) {
+            let pos = p.pop()
             this.movePlayerTo(pos)
           } else {
             window.clearInterval(travelTimer)
+            this.travelling = false
             resolve()
           }
-        }, 10)
+        }, ms)
       })
     },
+    replay() {
+      if (this.replayControls.speedMultiplier !== 0) {
+        const turn = this.replayControls.path[this.replayControls.pathIndex]
+        this.timeElapsed = Math.round(turn.time / 1000)
+        this.curTurns = this.replayControls.pathIndex
+        if (this.replayControls.speedMultiplier > 0) {
+          if (this.replayControls.pathIndex === 0) {
+            // Push initial state
+            this.replayControls.mapStates.push(JSON.parse(JSON.stringify(this.sokoMap)))
+          }
+          let dx = turn.pos.x - this.playerPosition.x
+          let dy = turn.pos.y - this.playerPosition.y
+          this.move(dx, dy, false, false)
+          // Push state after move
+          this.replayControls.mapStates.push(JSON.parse(JSON.stringify(this.sokoMap)))
+          if (this.replayControls.pathIndex === this.replayControls.path.length - 1) {
+            this.replayControls.speedMultiplier = 0
+          } else {
+            this.replayControls.pathIndex++
+          }
+        } else {
+          if (this.replayControls.mapStates.length > 0) {
+            const curState = this.replayControls.mapStates.pop()
+            if (this.replayControls.pathIndex > 0) {
+              this.replayControls.pathIndex--
+            }
+            for (let y = 0; y < curState.length; y++) {
+              for (let x = 0; x < curState[y].length; x++) {
+                this.sokoMap[y][x].character = curState[y][x].character
+                if (curState[y][x].player) {
+                  this.sokoMap[y][x].player = true
+                  this.sokoMap[y][x].highlight = true
+                  this.playerPosition.x = x
+                  this.playerPosition.y = y
+                } else {
+                  this.sokoMap[y][x].player = false
+                  this.sokoMap[y][x].highlight = false
+                }
+                this.sokoMap[y][x].boulder = curState[y][x].boulder
+              }
+            }
+          } else {
+            this.replayControls.speedMultiplier = 0
+          }
+        }
+      }
+      window.setTimeout(() => {
+        this.replay()
+      }, ((this.replaySpeed === 0) ? 500 : this.replaySpeed))
+    },
+    normalizePos(pos) {
+      let p = {
+        x: pos.x,
+        y: pos.y
+      }
+      if (this.fh) {
+        p.x = ((this.sokoMap[0].length - 1) - p.x)
+      }
+      if (this.fv) {
+        p.y = ((this.sokoMap.length - 1) - p.y)
+      }
+      return p
+    },
     movePlayerTo(pos) {
-      let mapPos = this.map[this.playerPosition.y][this.playerPosition.x]
+      // record player moves in turnRecord
+      if (!this.replaying) {
+        this.turnRecord.push({
+          time: new Date().getTime() - this.timeStarted.getTime(),
+          pos: this.normalizePos(pos)
+        })
+      }
+      this.curTurns++
+      let mapPos = this.sokoMap[this.playerPosition.y][this.playerPosition.x]
       mapPos.highlight = false
       mapPos.player = false
       this.playerPosition.x = pos.x
       this.playerPosition.y = pos.y
-      mapPos = this.map[pos.y][pos.x]
+      mapPos = this.sokoMap[pos.y][pos.x]
       mapPos.highlight = true
       mapPos.player = true
     },
     calcDistance(pos, dist) {
-      this.map[pos.y][pos.x].visited = true
+      this.sokoMap[pos.y][pos.x].visited = true
       for (let dy = -1; dy < 2; dy++) {
         for (let dx = -1; dx < 2; dx++) {
-          if (!this.map[pos.y + dy][pos.x + dx].visited && this.canTravelTo(pos.x + dx, pos.y + dy, dx, dy)) {
-            let travellingTo = this.map[pos.y + dy][pos.x + dx]
+          if (!this.sokoMap[pos.y + dy][pos.x + dx].visited && this.canTravelTo(pos.x + dx, pos.y + dy, dx, dy)) {
+            let travellingTo = this.sokoMap[pos.y + dy][pos.x + dx]
             if (travellingTo.distance === undefined || travellingTo.distance > dist) {
               travellingTo.distance = dist + 1
             }
@@ -306,20 +431,20 @@ export default {
     getNextTravelSpace(pos) {
       for (let dy = -1; dy < 2; dy++) {
         for (let dx = -1; dx < 2; dx++) {
-          if (this.map[pos.y + dy][pos.x + dx].distance === (this.map[pos.y][pos.x].distance - 1)) {
+          if (this.sokoMap[pos.y + dy][pos.x + dx].distance === (this.sokoMap[pos.y][pos.x].distance - 1)) {
             return {x: (pos.x + dx), y: (pos.y + dy)}
           }
         }
       }
     },
     travelTo() {
-      for (let y = 0; y < this.map.length; y++) {
-        for (let x = 0; x < this.map[y].length; x++) {
-          this.map[y][x].distance = undefined
-          this.map[y][x].visited = false
+      for (let y = 0; y < this.sokoMap.length; y++) {
+        for (let x = 0; x < this.sokoMap[y].length; x++) {
+          this.sokoMap[y][x].distance = undefined
+          this.sokoMap[y][x].visited = false
         }
       }
-      this.map[this.playerPosition.y][this.playerPosition.x].distance = 0
+      this.sokoMap[this.playerPosition.y][this.playerPosition.x].distance = 0
       this.calcDistanceArray.push({
         pos: this.playerPosition,
         distance: 0
@@ -328,10 +453,10 @@ export default {
         let nextPos = this.calcDistanceArray.pop()
         this.calcDistance(nextPos.pos, nextPos.distance)
       }
-      if (this.map[this.travelPosition.y][this.travelPosition.x].distance !== undefined) {
+      if (this.sokoMap[this.travelPosition.y][this.travelPosition.x].distance !== undefined) {
         let curPos = {x: this.travelPosition.x, y: this.travelPosition.y }
         this.travelPath.push(curPos)
-        while (this.map[curPos.y][curPos.x].distance > 0) {
+        while (this.sokoMap[curPos.y][curPos.x].distance > 0) {
           curPos = this.getNextTravelSpace(curPos)
           this.travelPath.push(curPos)
         }
@@ -353,49 +478,86 @@ export default {
     setTravelMode(mode) {
       this.travelMode = mode
       if (this.travelMode) {
-        this.travelPosition.y = this.playerPosition.y;
-        this.travelPosition.x = this.playerPosition.x;
+        this.message = 'Where do you want to travel to?'
+        this.travelPosition.y = this.playerPosition.y
+        this.travelPosition.x = this.playerPosition.x
+      } else {
+        this.message = ' '
       }
-      this.map[this.playerPosition.y][this.playerPosition.x].highlight = !this.travelMode
-      this.map[this.travelPosition.y][this.travelPosition.x].highlight = this.travelMode
+      this.sokoMap[this.playerPosition.y][this.playerPosition.x].highlight = !this.travelMode
+      this.sokoMap[this.travelPosition.y][this.travelPosition.x].highlight = this.travelMode
     },
     move (x, y, moveTo, pushBoulder) {
       if (this.travelMode) {
         let dx = (pushBoulder) ? x * 8 : x
         let dy = (pushBoulder) ? y * 8 : y
-        this.map[this.travelPosition.y][this.travelPosition.x].highlight = false
-        this.travelPosition.x += dx;
-        this.travelPosition.y += dy;
-        this.travelPosition.x = this.limit(this.travelPosition.x, this.map[0].length - 1)
-        this.travelPosition.y = this.limit(this.travelPosition.y, this.map.length - 1)
-        this.map[this.travelPosition.y][this.travelPosition.x].highlight = true
-        return;
+        this.sokoMap[this.travelPosition.y][this.travelPosition.x].highlight = false
+        this.travelPosition.x += dx
+        this.travelPosition.y += dy
+        this.travelPosition.x = this.limit(this.travelPosition.x, this.sokoMap[0].length - 1)
+        this.travelPosition.y = this.limit(this.travelPosition.y, this.sokoMap.length - 1)
+        this.sokoMap[this.travelPosition.y][this.travelPosition.x].highlight = true
+        return
       }
-      this.pushBoulder = pushBoulder;
-      this.moveTo = moveTo;
+      this.pushBoulder = pushBoulder
+      this.moveTo = moveTo
       if (this.canMoveTo(this.playerPosition.x + x, this.playerPosition.y + y, x, y)) {
-        this.curTurns++;
-        this.map[this.playerPosition.y][this.playerPosition.x].player = false
-        this.map[this.playerPosition.y][this.playerPosition.x].highlight = false
-        this.playerPosition.x += x;
-        this.playerPosition.y += y;
-        this.map[this.playerPosition.y][this.playerPosition.x].player = true
-        this.map[this.playerPosition.y][this.playerPosition.x].highlight = true
-        // this.updateMapString();
+        this.movePlayerTo({x: this.playerPosition.x + x, y: this.playerPosition.y + y})
+        // this.updateMapString()
         if (moveTo) {
           // repeat same move while possible
-          this.move(x,y, this.moveTo, this.pushBoulder);
+          this.move(x,y, this.moveTo, this.pushBoulder)
+        }
+        // They got to the up stair and completed the level
+        if (this.sokoMap[this.playerPosition.y][this.playerPosition.x].character === '<' && !this.replaying) {
+          this.wonLevel()
         }
       } else {
-        this.moveTo = false;
+        this.moveTo = false
       }
     },
     isPassable(x, y) {
-      const movingTo = this.map[y][x];
-      return (!movingTo.boulder && movingTo.character === '.' || movingTo.character === '<' || movingTo.character === '>' || movingTo.character === '+');
+      const movingTo = this.sokoMap[y][x]
+      return (!movingTo.boulder && movingTo.character === '.' || movingTo.character === '<' || movingTo.character === '>' || movingTo.character === '+')
+    },
+    replayGame (game) {
+      this.loadMap()
+      // Start in playing state
+      this.replayControls.speedMultiplier = 1
+      this.replaying = true
+      this.message = 'Replaying: '
+      this.replayControls.path = game.path.map((p) =>
+      {
+        return { pos: this.normalizePos(p.pos), time: p.time }
+      })
+      this.replay()
+    },
+    recordWin () {
+      let record = {
+        level: this.curLevel,
+        subLevel: this.curSubLevel,
+        time: this.timeElapsed,
+        turns: this.curTurns,
+        path: this.turnRecord
+      }
+      this.myGames.push(record)
+      localStorage.setItem('myGames', JSON.stringify(this.myGames))
+    },
+    wonLevel () {
+      this.won = true
+      this.message = "You completed this level in: "
+      this.bestTurns[this.curLevel][this.curSubLevel] = Math.min(this.bestTurns[this.curLevel][this.curSubLevel], this.curTurns)
+      localStorage.setItem('bestTurns', JSON.stringify(this.bestTurns))
+
+      this.bestTime[this.curLevel][this.curSubLevel] = Math.min(this.bestTime[this.curLevel][this.curSubLevel], this.timeElapsed)
+      localStorage.setItem('bestTime', JSON.stringify(this.bestTime))
+
+
+      clearInterval(this.timerInterval)
+      this.recordWin()
     },
     canMoveTo (x, y, dx, dy) {
-      const movingTo = this.map[y][x]
+      const movingTo = this.sokoMap[y][x]
       // Prevent squeezing through
       if (dx !== 0 && dy !== 0) {
         // if moving diagonal
@@ -404,36 +566,7 @@ export default {
         }
       }
       if (this.isPassable(x, y)) {
-        if (movingTo.character === '<') {
-          this.bestTurns[this.curLevel][this.curSubLevel] = Math.min(this.bestTurns[this.curLevel][this.curSubLevel], this.curTurns);
-          localStorage.setItem('bestTurns', JSON.stringify(this.bestTurns));
-
-          this.bestTime[this.curLevel][this.curSubLevel] = Math.min(this.bestTime[this.curLevel][this.curSubLevel], this.timeElapsed);
-          localStorage.setItem('bestTime', JSON.stringify(this.bestTime));
-
-          if (this.curLevel === maps.length - 1 && (!this.doBothSubLevels || this.curSubLevel === maps[this.curLevel].length - 1)) {
-            this.won = true;
-            // Stop timer when you win the game
-            clearInterval(this.timerInterval);
-            this.curLevel = 1;
-          } else {
-            if (this.doBothSubLevels) {
-              if (this.curSubLevel === maps[this.curLevel].length - 1) {
-                this.curLevel++;
-                this.curSubLevel = 0;
-              } else {
-                this.curSubLevel++;
-              }
-            } else {
-              this.curLevel++;
-              this.curSubLevel = Math.floor(Math.random() * maps[this.curLevel].length)
-            }
-            this.loadMap();
-          }
-          return false
-        } else {
-          return true
-        }
+        return true
       } else if (movingTo.boulder && (this.pushBoulder || !this.moveTo)) {
         return this.tryPushBoulder(x, y, dx, dy)
       }
@@ -441,59 +574,49 @@ export default {
     },
     tryPushBoulder (x, y, dx, dy) {
       // Only push boulders once with shift movement
-      this.pushBoulder = false;
+      this.pushBoulder = false
       // can't push boulders diagonal
-      if (dx !== 0 && dy !== 0) return false;
-      const pushingTo = this.map[y + dy][x + dx]
+      if (dx !== 0 && dy !== 0) return false
+      const pushingTo = this.sokoMap[y + dy][x + dx]
       if (!pushingTo.boulder && pushingTo.character === '.' || pushingTo.character === '<' || pushingTo.character === '>') {
         // Move boulder
-        this.map[y][x].boulder = false
-        this.map[y + dy][x + dx].boulder = true
+        this.sokoMap[y][x].boulder = false
+        this.sokoMap[y + dy][x + dx].boulder = true
       } else if (pushingTo.character === '^') {
-        this.map[y][x].boulder = false
+        this.sokoMap[y][x].boulder = false
         // Replace pit with floor
-        this.map[y + dy][x + dx].character = '.'
+        this.sokoMap[y + dy][x + dx].character = '.'
       } else {
-        return false;
+        return false
       }
-      return true;
+      return true
     }
   },
   watch: {
     flipVertically: function (val) {
-      localStorage.setItem('flipVertically', val);
+      localStorage.setItem('flipVertically', val)
       if (val) {
-        this.flipRandomly = false;
+        this.flipRandomly = false
       }
-      this.fv = val;
-      this.loadMap();
+      this.fv = val
+      this.loadMap()
     },
     flipHorizontally: function (val) {
-      localStorage.setItem('flipHorizontally', val);
+      localStorage.setItem('flipHorizontally', val)
       if (val) {
-        this.flipRandomly = false;
+        this.flipRandomly = false
       }
-      this.fh = val;
-      this.loadMap();
+      this.fh = val
+      this.loadMap()
     },
     flipRandomly: function (val) {
-      localStorage.setItem('flipRandomly', val);
+      localStorage.setItem('flipRandomly', val)
       if (val) {
-        this.flipVertically = false;
-        this.flipHorizontally = false;
+        this.flipVertically = false
+        this.flipHorizontally = false
       }
-      this.loadMap();
+      this.loadMap()
     },
-    doBothSubLevels: function (val) {
-      localStorage.setItem('doBothSubLevels', val);
-      if (val && this.curSubLevel > 0) {
-        this.curSubLevel = 0;
-        this.loadMap();
-      }
-    },
-    trackTurnsLocally: function (val) {
-      localStorage.setItem('trackTurnsLocally', val);
-    }
   }
 }
 </script>

@@ -1,10 +1,7 @@
 <template>
   <div>
     <div class="nh-text nh-checkbox" @click="clickCheck">
-      <span v-html="check" /> <span>{{label}}</span>
-    </div>
-    <div v-if="hint">
-      <span class="nh-text nh-text-small">{{hint}}</span>
+      <span v-html="check" /> <span :title="hint">{{label}}</span>
     </div>
   </div>
 </template>
@@ -36,6 +33,7 @@ export default {
 <style>
 .nh-text {
   font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
+  font-weight: bold;
 }
 .nh-text-small {
   font-size: small;

@@ -1,8 +1,8 @@
 <template>
-  <div class="map">
+  <div class="map" :class="{darkMode}">
     <div
         class="map-row"
-        v-for="row in map"
+        v-for="row in sokoMap"
         v-bind:key="row.id"
     >
       <MapCell
@@ -26,7 +26,7 @@ import MapCell from "./MapCell";
 export default {
   name: 'Map',
   props: {
-    map: Array,
+    sokoMap: Array,
     darkMode: Boolean,
     highlight: Array,
     highlightX: Number,
@@ -41,23 +41,18 @@ export default {
 
 <style>
 .map {
-  padding-left: 10em;
-  padding-top: 3em;
-  width: 30em;
-  height: 24em;
+  padding: 2em;
   font-family: 'Menlo', monospace;
+  font-size: larger;
   white-space: pre;
-  color: white;
-  background-color: black;
-}
-.map-row {
-  height: 1em;
-}
-.map.invert {
   color: black;
   background-color: white;
 }
-.highlight {
-  background-color: #666 !important;
+.map-row {
+  height: 1.2em;
+}
+.map.darkMode {
+  color: white;
+  background-color: #121212;
 }
 </style>

@@ -42,9 +42,10 @@ export default {
 }
 .dark-mode {
   color: white;
-  background-color: black;
+  background-color: #121212;
 }
 .highlight {
-  background-color: #666 !important;
+  background-color: rgb(157, 157, 157) !important;
+  outline: 1px solid rgb(157, 157, 157);
 }
 </style>

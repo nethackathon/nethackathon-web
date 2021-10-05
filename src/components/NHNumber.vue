@@ -42,5 +42,6 @@ export default {
 }
 .nh-input {
   font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
+  font-weight: bold;
 }
 </style>
