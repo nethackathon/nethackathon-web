@@ -32,6 +32,24 @@ export async function register (data) {
     return res
 }
 
+export async function updateSokoban (data) {
+    const updateRoute = route + '/sokoban'
+    const res = await axios.post(updateRoute, data)
+    return res
+}
+
+export async function getBestTurns (level, sublevel) {
+    const getRoute = `${route}/sokoban/turns/${level}/${sublevel}`
+    const res = await axios.get(getRoute)
+    return res
+}
+
+export async function getBestTime (level, sublevel) {
+    const getRoute = `${route}/sokoban/time/${level}/${sublevel}`
+    const res = await axios.get(getRoute)
+    return res
+}
+
 export async function login (data) {
     const loginRoute = route + '/login'
     const res = await axios.post(loginRoute, data, {

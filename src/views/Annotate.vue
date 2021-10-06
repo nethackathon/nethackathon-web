@@ -35,6 +35,18 @@
             label="Protection"
             @changed="updateProtection"
         />
+        <NHCheckbox
+            @clicked="updateCanPray"
+            :checked="localData.canPray"
+            label="Can pray"
+        />
+        <NHNumber
+            :value="localData.lastPrayed"
+            min="0"
+            max="99999"
+            label="Last prayed"
+            @changed="updateLastPrayed"
+        />
       </v-col>
     </v-row>
     <v-row v-if="selectedTab === 'Notes'">
@@ -74,7 +86,7 @@
     </v-row>
     <v-row v-if="selectedTab === 'Sokoban'">
       <v-col>
-        <Sokoban />
+        <Sokoban :logged-in="loggedIn" />
       </v-col>
     </v-row>
     <v-row>
@@ -157,6 +169,14 @@ export default {
     }, 1000),
     updateProtection: function (value) {
       this.localData.protection = value
+      update(this.localData)
+    },
+    updateCanPray: function () {
+      this.localData.canPray = !this.localData.canPray
+      update(this.localData)
+    },
+    updateLastPrayed: function (value) {
+      this.localData.lastPrayed = value
       update(this.localData)
     },
     updateCha: function (value) {

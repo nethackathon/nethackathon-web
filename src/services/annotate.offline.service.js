@@ -20,6 +20,8 @@ const defaultData = {
         { name: 'Warning', value: false },
     ],
     protection: 0,
+    canPray: true,
+    lastPrayed: undefined,
     notes: '',
     cha: 10,
     touristCapShirt: false

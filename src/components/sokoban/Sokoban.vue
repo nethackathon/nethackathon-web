@@ -58,14 +58,13 @@
       <div class="inline">
         <h3>High Scores</h3>
         <NHHighScores
-            v-if="filteredMyGames.length > 0"
             :games="filteredMyGames"
+            :best-times="bestTime"
+            :best-turns="bestTurns"
+            :logged-in="loggedIn"
             @replayGame="replayGame"
             :dark-mode="this.$vuetify.theme.dark"
         />
-        <div v-else>
-          <p>No games found</p>
-        </div>
       </div>
     </div>
   </div>
@@ -77,9 +76,13 @@ import maps from './maps/maps'
 import NHCheckbox from '../NHCheckbox'
 import NHHighScores from "../NHHighScores";
 import NHPlaybackControls from "../NHPlaybackControls";
+import { updateSokoban, getBestTime, getBestTurns } from "../../services/annotate.online.service"
 
 export default {
   name: 'Sokoban',
+  props: {
+    loggedIn: Boolean,
+  },
   components: {
     NHPlaybackControls,
     NHHighScores,
@@ -103,8 +106,6 @@ export default {
   data () {
     return {
       curTurns: 0,
-      bestTurns: [[Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]],
-      bestTime: [[Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]],
       travelling: false,
       replaying: false,
       travelMode: false,
@@ -131,7 +132,10 @@ export default {
       won: false,
       turnRecord: [],
       myGames: [],
+      bestTurns: [],
+      bestTime: [],
       replayControls: {
+        timeoutId: undefined,
         path: [],
         pathIndex: 0,
         speed: 100,
@@ -152,14 +156,14 @@ export default {
     },
     filteredMyGames () {
       return this.myGames
-        .filter((g) => (g.level === this.curLevel && g.subLevel === this.curSubLevel))
+        .filter((g) => (g.soko_level === this.curLevel && g.soko_sublevel === this.curSubLevel))
         .map((g, i) => {
           return {
             id: 'local_' + i,
             player: 'You',
-            time: g.time,
-            turns: g.path.length,
-            path: g.path,
+            time_seconds: g.time_seconds,
+            turn_count: g.soko_path.length,
+            soko_path: g.soko_path,
           }
         })
     },
@@ -200,12 +204,6 @@ export default {
       if (localStorage.getItem('flipRandomly') !== null) {
         this.flipRandomly = (localStorage.getItem('flipRandomly') === 'true')
       }
-      if (localStorage.getItem('bestTurns') !== null) {
-        this.bestTurns = JSON.parse(localStorage.getItem('bestTurns'))
-      }
-      if (localStorage.getItem('bestTime') !== null) {
-        this.bestTime = JSON.parse(localStorage.getItem('bestTime'))
-      }
     },
     changeLevel (levelObject) {
       this.curLevel = levelObject.level
@@ -213,6 +211,16 @@ export default {
       this.loadMap()
     },
     loadMap () {
+      // update scores
+      getBestTime(this.curLevel, this.curSubLevel).then((res) => this.bestTime = res.data)
+      getBestTurns(this.curLevel, this.curSubLevel).then((res) => this.bestTurns = res.data)
+
+      // reset playback
+      this.replayControls.path = []
+      this.replayControls.pathIndex = 0
+      this.replayControls.mapStates = []
+      this.replayControls.speedMultiplier = 0
+
       // reset timer
       this.timeElapsed = 0
       this.travelPath = []
@@ -331,6 +339,9 @@ export default {
       })
     },
     replay() {
+      if (this.replayControls.timeoutId) {
+        window.clearTimeout(this.replayControls.timeoutId)
+      }
       if (this.replayControls.speedMultiplier !== 0) {
         const turn = this.replayControls.path[this.replayControls.pathIndex]
         this.timeElapsed = Math.round(turn.time / 1000)
@@ -376,7 +387,7 @@ export default {
           }
         }
       }
-      window.setTimeout(() => {
+      this.replayControls.timeoutId = window.setTimeout(() => {
         this.replay()
       }, ((this.replaySpeed === 0) ? 500 : this.replaySpeed))
     },
@@ -526,7 +537,8 @@ export default {
       this.replayControls.speedMultiplier = 1
       this.replaying = true
       this.message = 'Replaying: '
-      this.replayControls.path = game.path.map((p) =>
+      let sokoPath = JSON.parse(game.soko_path)
+      this.replayControls.path = sokoPath.map((p) =>
       {
         return { pos: this.normalizePos(p.pos), time: p.time }
       })
@@ -534,26 +546,24 @@ export default {
     },
     recordWin () {
       let record = {
-        level: this.curLevel,
-        subLevel: this.curSubLevel,
-        time: this.timeElapsed,
-        turns: this.curTurns,
-        path: this.turnRecord
+        soko_level: this.curLevel,
+        soko_sublevel: this.curSubLevel,
+        time_seconds: this.timeElapsed,
+        turn_count: this.curTurns,
+        soko_path: this.turnRecord
       }
-      this.myGames.push(record)
-      localStorage.setItem('myGames', JSON.stringify(this.myGames))
+      if (this.loggedIn) {
+        updateSokoban(record)
+      } else {
+        this.myGames.push(record)
+        localStorage.setItem('myGames', JSON.stringify(this.myGames))
+      }
     },
     wonLevel () {
       this.won = true
       this.message = "You completed this level in: "
-      this.bestTurns[this.curLevel][this.curSubLevel] = Math.min(this.bestTurns[this.curLevel][this.curSubLevel], this.curTurns)
-      localStorage.setItem('bestTurns', JSON.stringify(this.bestTurns))
-
-      this.bestTime[this.curLevel][this.curSubLevel] = Math.min(this.bestTime[this.curLevel][this.curSubLevel], this.timeElapsed)
-      localStorage.setItem('bestTime', JSON.stringify(this.bestTime))
-
-
       clearInterval(this.timerInterval)
+      this.timerStarted = false
       this.recordWin()
     },
     canMoveTo (x, y, dx, dy) {
