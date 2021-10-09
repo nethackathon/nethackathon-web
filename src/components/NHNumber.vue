@@ -7,7 +7,7 @@
         type="number"
         :min="min"
         :max="max"
-        size="2"
+        :size="max.length + 2"
         :value="value"
         @change="changed"/>
   </div>
