@@ -1,4 +1,4 @@
-const isDev = true
+const isDev = false
 const apiRoute = 'https://nethackathon.org/annotate'
 const devRoute = 'http://localhost:3000/annotate'
 const route = (isDev) ? devRoute : apiRoute
@@ -29,6 +29,9 @@ export async function resetOnline () {
 export async function register (data) {
     const registerRoute = route + '/register'
     const res = await axios.post(registerRoute, data)
+    if (res.status === 201) {
+        axios.defaults.headers.common['x-access-token'] = res.data
+    }
     return res
 }
 
