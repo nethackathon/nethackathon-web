@@ -92,7 +92,7 @@
     </v-row>
     <v-row v-if="selectedTab === 'Sokoban'">
       <v-col>
-        <Sokoban :logged-in="loggedIn" />
+        <Sokoban :logged-in="loggedIn" :logging-in="showLoginModal"/>
       </v-col>
     </v-row>
     <v-row>
@@ -227,9 +227,10 @@ export default {
 }
 .nh-modal {
   position: absolute;
-  width: 40%;
-  left: 30%;
-  top: 30%;
+  width: 450px;
+  left: 50%;
+  top: 15%;
+  transform: translate(-50%);
   border: 1px solid #666;
   padding: 1em;
 }

@@ -90,6 +90,7 @@ export default {
   name: 'Sokoban',
   props: {
     loggedIn: Boolean,
+    loggingIn: Boolean,
   },
   components: {
     NHPlaybackControls,
@@ -316,6 +317,7 @@ export default {
     },
     keyboardEvent (evt) {
       // console.log('evt', evt);
+      if (this.loggingIn) return
       if (! this.timerStarted) {
         this.timerStarted = true
         this.timeStarted = new Date()
@@ -325,7 +327,7 @@ export default {
       if (evt.key === 'r') this.loadMap();
       if (this.travelling || this.replaying || this.won) return
       // Prevent window from scrolling when using the arrow keys
-      if (evt.key === 'ArrowDown' || evt.key === 'ArrowUp' || evt.key === 'ArrowLeft' ||evt.key === 'ArrowRight') evt.preventDefault();
+      // if (evt.key === 'ArrowDown' || evt.key === 'ArrowUp' || evt.key === 'ArrowLeft' ||evt.key === 'ArrowRight') evt.preventDefault();
       if (evt.key === 'm' || evt.key === 'g') this.moveTo = true;
       if (evt.key === 'j' || evt.key === 'J' || evt.key === '2' || evt.key === 'ArrowDown') this.move(0, 1, this.getMoveTo(evt), this.getPushTo(evt));
       if (evt.key === 'k' || evt.key === 'K' || evt.key === '8' || evt.key === 'ArrowUp') this.move(0, -1, this.getMoveTo(evt), this.getPushTo(evt));
@@ -351,6 +353,8 @@ export default {
         }
         this.setTravelMode(false)
       }
+      evt.preventDefault()
+      evt.stopPropagation()
     },
     async travel(path, ms) {
       this.travelling = true
