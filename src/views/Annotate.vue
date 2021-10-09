@@ -92,7 +92,7 @@
     </v-row>
     <v-row v-if="selectedTab === 'Sokoban'">
       <v-col>
-        <Sokoban :logged-in="loggedIn" :logging-in="showLoginModal"/>
+        <Sokoban :logged-in="loggedIn" :logging-in="showLoginModal" @logIn="showLoginModal = true"/>
       </v-col>
     </v-row>
     <v-row>

@@ -2,17 +2,14 @@
   <div>
     <div class="mb-2">
         <span
-            v-if="!loggedIn"
             :class="{'selected-tab':('My Games' === selectedTab)}"
             @click="selectedTab = 'My Games'"
-            class="nh-tab nh-clickable nh-textarea">My Games</span>
+            class="nh-tab nh-clickable nh-textarea">Local Games</span>
       <span
-          v-if="loggedIn"
           :class="{'selected-tab':('Best Times' === selectedTab)}"
           @click="selectedTab = 'Best Times'"
           class="nh-tab nh-clickable nh-textarea">Best Times</span>
       <span
-          v-if="loggedIn"
           :class="{'selected-tab':('Best Turns' === selectedTab)}"
           @click="selectedTab = 'Best Turns'"
           class="nh-tab nh-clickable nh-textarea">Best Turn Count</span>
@@ -35,6 +32,7 @@
         :dark-mode="darkMode"
         @replayGame="(game) => $emit('replayGame', game)"
     />
+    <em v-if="!loggedIn"><small>Compete and share your strategies with others, <span @click="$emit('logIn')" class="nh-clickable">register and log in</span>!</small></em>
   </div>
 </template>
 

@@ -71,6 +71,7 @@
             :best-turns="bestTurns"
             :logged-in="loggedIn"
             @replayGame="replayGame"
+            @logIn="$emit('logIn')"
             :dark-mode="this.$vuetify.theme.dark"
         />
       </div>
@@ -241,9 +242,7 @@ export default {
     },
     loadMap () {
       this.won = false
-      if (this.loggedIn) {
-        this.updateScores()
-      }
+      this.updateScores()
       // reset playback
       this.replayControls.path = []
       this.replayControls.pathIndex = 0
@@ -570,7 +569,7 @@ export default {
           (
               movingTo.character === '.' || movingTo.character === '<' ||
               movingTo.character === '>' || movingTo.character === '+' ||
-              (movingTo.character === '^' && this.enableHoles)
+              (movingTo.character === '^' && this.enableHoles && this.curLevel > 0)
           )
       )
     },
