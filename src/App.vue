@@ -76,6 +76,7 @@ export default {
   bottom: 10px;
   right: 10px;
   cursor: pointer;
+  z-index: 10;
 }
 .djinni {
   bottom: 85px;

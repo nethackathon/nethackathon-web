@@ -1,15 +1,18 @@
 <template>
   <v-container fluid id="annotate">
     <v-row>
-      <v-col cols="9">
-        <h1>#annotate <small>- Your NetHack companion app</small></h1>
+      <v-col cols="12" md="2">
+        <h1>#annotate</h1>
       </v-col>
-      <v-col cols="3" class="text-right">
+      <v-col cols="12" md="6">
+        <h1><small>Your NetHack companion app</small></h1>
+      </v-col>
+      <v-col cols="12" md="4" class="text-right">
         <NHTimer/>
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="6">
+      <v-col cols="12" md="6">
         <span
             v-for="tab in tabs"
             v-bind:key="tab"
@@ -17,9 +20,9 @@
             @click="selectedTab = tab"
             class="nh-tab nh-clickable nh-textarea">{{tab}}</span>
       </v-col>
-      <v-col cols="6" class="text-right">
+      <v-col cols="12" md="6" class="text-right">
         <span v-if="loggedIn">Logged in as {{loggedInAs}} <span class="nh-link nh-clickable" @click="logOut">Log out</span></span>
-        <span v-if="!loggedIn">Storing data in local storage, to use the server, <span class="nh-link nh-clickable" href="#" @click="showLoginModal = true">Log in</span></span>
+        <span v-if="!loggedIn">Storing data in local storage, <span class="nh-link nh-clickable" href="#" @click="showLoginModal = true">Log in</span></span>
       </v-col>
     </v-row>
     <v-row v-if="selectedTab === 'Intrinsics'">

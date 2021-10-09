@@ -1,6 +1,13 @@
 <template>
   <div class="nh-item-type">
-    <span class="nh-item-symbol" v-for="type in types" v-bind:key="type.symbol" :style="'color: ' + type.color + ';'" :title="type.notes">
+    <span
+        class="nh-item-symbol"
+        v-for="type in types"
+        v-bind:key="type.symbol"
+        :style="'color: ' + type.color + ';'"
+        :title="type.notes"
+        @click="$emit('clicked', type.notes)"
+    >
       {{type.symbol}}&nbsp;
     </span>
   </div>

@@ -2,13 +2,20 @@
   <div class="nh-text">
     <table :class="{darkMode}">
       <tr>
-        <th>Sell</th><th>Buy</th><th>Base price</th><th>Item types</th>
+        <th>Sell</th><th>Buy</th><th>Base</th><th>Item types</th>
       </tr>
       <tr v-for="basePrice in basePrices" v-bind:key="basePrice.price">
         <td>{{sellPrices(basePrice.price)}}</td>
         <td>{{buyPrices(basePrice.price)}}</td>
         <td>{{basePrice.price}}</td>
-        <td><NHPriceIdTypes :types="basePrice.types"/></td>
+        <td><NHPriceIdTypes :types="basePrice.types" @clicked="clickedType"/></td>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <div class="nh-textarea">
+            <v-textarea outlined v-model="itemTypes" cols="40" rows="5"/>
+          </div>
+        </td>
       </tr>
     </table>
   </div>
@@ -28,6 +35,7 @@ export default {
   },
 
     data: () => ({
+      itemTypes: '',
       highlights: [
         'rgb(255, 157, 157)',
         'rgb(157, 255, 157)',
@@ -143,6 +151,9 @@ export default {
       buyPrices: function (basePrice) {
         return this.buyPriceMultipliers.map((multiplier) => { return round(multiply(multiplier, basePrice)) }).join(', ')
       },
+      clickedType: function (types) {
+        this.itemTypes = types
+      }
     }
   }
 </script>
