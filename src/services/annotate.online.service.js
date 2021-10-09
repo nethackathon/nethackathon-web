@@ -58,5 +58,8 @@ export async function login (data) {
             return true
         }
     })
+    if (res.status === 201) {
+        axios.defaults.headers.common['x-access-token'] = res.data
+    }
     return res
 }

@@ -27,6 +27,11 @@
     <NHButton
         :label="status"
     />
+    <NHButton
+        label="X"
+        hint="Exit replay mode"
+        @clicked="$emit('exitReplay')"
+    />
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div class="mb-2">
         <span
             v-if="!loggedIn"
             :class="{'selected-tab':('My Games' === selectedTab)}"
@@ -17,45 +17,36 @@
           @click="selectedTab = 'Best Turns'"
           class="nh-tab nh-clickable nh-textarea">Best Turn Count</span>
     </div>
-    <table :class="{darkMode}" v-if="selectedTab === 'My Games'">
-      <tr>
-        <th>Player</th><th>Time</th><th>Turns</th><th></th>
-      </tr>
-      <tr v-for="game in games" v-bind:key="game.id">
-        <td>{{game.player}}</td>
-        <td>{{game.time_seconds}}</td>
-        <td>{{game.turn_count}}</td>
-        <td @click="$emit('replayGame', game)" class="nh-clickable">Replay</td>
-      </tr>
-    </table>
-    <table :class="{darkMode}" v-if="selectedTab === 'Best Times'">
-      <tr>
-        <th>Player</th><th>Time</th><th>Turns</th><th></th>
-      </tr>
-      <tr v-for="game in bestTimes" v-bind:key="game.id">
-        <td>{{game.player}}</td>
-        <td>{{game.time_seconds}}</td>
-        <td>{{game.turn_count}}</td>
-        <td @click="$emit('replayGame', game)" class="nh-clickable">Replay</td>
-      </tr>
-    </table>
-    <table :class="{darkMode}" v-if="selectedTab === 'Best Turns'">
-      <tr>
-        <th>Player</th><th>Time</th><th>Turns</th><th></th>
-      </tr>
-      <tr v-for="game in bestTurns" v-bind:key="game.id">
-        <td>{{game.player}}</td>
-        <td>{{game.time_seconds}}</td>
-        <td>{{game.turn_count}}</td>
-        <td @click="$emit('replayGame', game)" class="nh-clickable">Replay</td>
-      </tr>
-    </table>
+    <NHScoreTable
+        v-if="selectedTab === 'My Games'"
+        :games="games"
+        :dark-mode="darkMode"
+        @replayGame="(game) => $emit('replayGame', game)"
+    />
+    <NHScoreTable
+        v-if="selectedTab === 'Best Times'"
+        :games="bestTimes"
+        :dark-mode="darkMode"
+        @replayGame="(game) => $emit('replayGame', game)"
+    />
+    <NHScoreTable
+        v-if="selectedTab === 'Best Turns'"
+        :games="bestTurns"
+        :dark-mode="darkMode"
+        @replayGame="(game) => $emit('replayGame', game)"
+    />
   </div>
 </template>
 
 <script>
+import NHScoreTable from './NHScoreTable'
+
 export default {
   name: 'NHHighScores',
+
+  components: {
+    NHScoreTable
+  },
 
   props: ['games', 'darkMode', 'bestTimes', 'bestTurns', 'loggedIn'],
 

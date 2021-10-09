@@ -16,6 +16,7 @@
         @stop="replayControls.speedMultiplier = 0"
         @faster="replayFaster"
         @slower="replaySlower"
+        @exitReplay="loadMap"
         :status="replayStatus"
     />
     <Map
@@ -46,6 +47,13 @@
               @clicked="flipRandomly = !flipRandomly"
               :checked="flipRandomly"
               label="Flip randomly"
+          />
+        </div>
+        <div>
+          <NHCheckbox
+              @clicked="enableHoles = !enableHoles"
+              :checked="enableHoles"
+              label="Allow travel through holes"
           />
         </div>
       </div>
@@ -105,6 +113,7 @@ export default {
   },
   data () {
     return {
+      won: false,
       curTurns: 0,
       travelling: false,
       replaying: false,
@@ -127,9 +136,10 @@ export default {
       flipVertically: false,
       fv: false, // Tracking flipping vertically as done by random separately
       flipRandomly: false,
+      enableHoles: false,
       sokoMap: [],
       playerPosition: {x: -1, y: -1},
-      won: false,
+      downStairPosition: {x: -1, y: -1},
       turnRecord: [],
       myGames: [],
       bestTurns: [],
@@ -204,17 +214,35 @@ export default {
       if (localStorage.getItem('flipRandomly') !== null) {
         this.flipRandomly = (localStorage.getItem('flipRandomly') === 'true')
       }
+      if (localStorage.getItem('enableHoles') !== null) {
+        this.enableHoles = (localStorage.getItem('enableHoles') === 'true')
+      }
     },
     changeLevel (levelObject) {
       this.curLevel = levelObject.level
       this.curSubLevel = levelObject.subLevel
       this.loadMap()
     },
-    loadMap () {
+    updateScores () {
       // update scores
-      getBestTime(this.curLevel, this.curSubLevel).then((res) => this.bestTime = res.data)
-      getBestTurns(this.curLevel, this.curSubLevel).then((res) => this.bestTurns = res.data)
-
+      getBestTime(this.curLevel, this.curSubLevel).then((res) => {
+        this.bestTime = res.data
+        this.bestTime.map((record) => {
+          record.soko_path = JSON.parse(record.soko_path)
+        })
+      })
+      getBestTurns(this.curLevel, this.curSubLevel).then((res) => {
+        this.bestTurns = res.data
+        this.bestTurns.map((record) => {
+          record.soko_path = JSON.parse(record.soko_path)
+        })
+      })
+    },
+    loadMap () {
+      this.won = false
+      if (this.loggedIn) {
+        this.updateScores()
+      }
       // reset playback
       this.replayControls.path = []
       this.replayControls.pathIndex = 0
@@ -223,13 +251,15 @@ export default {
 
       // reset timer
       this.timeElapsed = 0
+      this.curTurns = 0
+      this.replaying = false
+      this.timerStarted = false
       this.travelPath = []
       this.message = 'Press any key to start timer.'
       this.turnRecord = []
       clearInterval(this.timerInterval)
       this.curTurns = 0
       // reset win state
-      this.won = false
       let m = maps[this.curLevel][this.curSubLevel].slice()
       if (this.flipRandomly) {
         this.fh = Math.random() < 0.5
@@ -245,6 +275,7 @@ export default {
       for (let y = 0; y < m.length; y++) {
         let row = []
         for (let x = 0; x < m[y].length; x++) {
+          if (m[y][x] === '>') this.downStairPosition = {x, y}
           row.push({
             id: `${y}-${x}`,
             character: (m[y][x] !== '0') ? m[y][x] : '.',
@@ -290,10 +321,9 @@ export default {
         this.timeStarted = new Date()
         this.timerInterval = setInterval(() => this.timeElapsed = Math.round((new Date().getTime() - this.timeStarted.getTime()) / 1000), 1000)
       }
-      if (this.travelling || this.replaying) return
-      if (evt.key === 'r') this.loadMap();
-      if (this.won) return
       this.message = ' '
+      if (evt.key === 'r') this.loadMap();
+      if (this.travelling || this.replaying || this.won) return
       // Prevent window from scrolling when using the arrow keys
       if (evt.key === 'ArrowDown' || evt.key === 'ArrowUp' || evt.key === 'ArrowLeft' ||evt.key === 'ArrowRight') evt.preventDefault();
       if (evt.key === 'm' || evt.key === 'g') this.moveTo = true;
@@ -515,13 +545,15 @@ export default {
       if (this.canMoveTo(this.playerPosition.x + x, this.playerPosition.y + y, x, y)) {
         this.movePlayerTo({x: this.playerPosition.x + x, y: this.playerPosition.y + y})
         // this.updateMapString()
-        if (moveTo) {
-          // repeat same move while possible
-          this.move(x,y, this.moveTo, this.pushBoulder)
-        }
         // They got to the up stair and completed the level
         if (this.sokoMap[this.playerPosition.y][this.playerPosition.x].character === '<' && !this.replaying) {
           this.wonLevel()
+        } else if (this.curLevel > 0 && this.sokoMap[this.playerPosition.y][this.playerPosition.x].character === '^') {
+          // player moved onto hole, move them to down stairs
+          this.movePlayerTo(this.downStairPosition)
+        } else if (moveTo) {
+          // repeat same move while possible
+          this.move(x,y, this.moveTo, this.pushBoulder)
         }
       } else {
         this.moveTo = false
@@ -529,7 +561,14 @@ export default {
     },
     isPassable(x, y) {
       const movingTo = this.sokoMap[y][x]
-      return (!movingTo.boulder && movingTo.character === '.' || movingTo.character === '<' || movingTo.character === '>' || movingTo.character === '+')
+      return (
+          !movingTo.boulder &&
+          (
+              movingTo.character === '.' || movingTo.character === '<' ||
+              movingTo.character === '>' || movingTo.character === '+' ||
+              (movingTo.character === '^' && this.enableHoles)
+          )
+      )
     },
     replayGame (game) {
       this.loadMap()
@@ -537,7 +576,7 @@ export default {
       this.replayControls.speedMultiplier = 1
       this.replaying = true
       this.message = 'Replaying: '
-      let sokoPath = JSON.parse(game.soko_path)
+      let sokoPath = game.soko_path
       this.replayControls.path = sokoPath.map((p) =>
       {
         return { pos: this.normalizePos(p.pos), time: p.time }
@@ -554,6 +593,7 @@ export default {
       }
       if (this.loggedIn) {
         updateSokoban(record)
+        this.updateScores()
       } else {
         this.myGames.push(record)
         localStorage.setItem('myGames', JSON.stringify(this.myGames))
@@ -587,15 +627,16 @@ export default {
       this.pushBoulder = false
       // can't push boulders diagonal
       if (dx !== 0 && dy !== 0) return false
+      const pushingFrom = this.sokoMap[y][x]
       const pushingTo = this.sokoMap[y + dy][x + dx]
-      if (!pushingTo.boulder && pushingTo.character === '.' || pushingTo.character === '<' || pushingTo.character === '>') {
+      if (!pushingTo.boulder && (pushingTo.character === '.' || pushingTo.character === '<' || pushingTo.character === '>')) {
         // Move boulder
-        this.sokoMap[y][x].boulder = false
-        this.sokoMap[y + dy][x + dx].boulder = true
+        pushingFrom.boulder = false
+        pushingTo.boulder = true
       } else if (pushingTo.character === '^') {
-        this.sokoMap[y][x].boulder = false
+        pushingFrom.boulder = false
         // Replace pit with floor
-        this.sokoMap[y + dy][x + dx].character = '.'
+        pushingTo.character = '.'
       } else {
         return false
       }
@@ -626,6 +667,9 @@ export default {
         this.flipHorizontally = false
       }
       this.loadMap()
+    },
+    enableHoles: function (val) {
+      localStorage.setItem('enableHoles', val)
     },
   }
 }

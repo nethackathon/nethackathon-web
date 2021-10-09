@@ -1,8 +1,11 @@
 <template>
   <v-container fluid id="annotate">
-    <v-row cols="12">
-      <v-col>
+    <v-row>
+      <v-col cols="9">
         <h1>#annotate <small>- Your NetHack companion app</small></h1>
+      </v-col>
+      <v-col cols="3" class="text-right">
+        <NHTimer/>
       </v-col>
     </v-row>
     <v-row>
@@ -114,6 +117,7 @@ import NHButton from "../components/NHButton";
 import NHPriceId from "../components/NHPriceId";
 import NHLogin from "../components/NHLogin";
 import Sokoban from "../components/sokoban/Sokoban";
+import NHTimer from "../components/NHTimer";
 
 export default {
   name: 'Annotate',
@@ -130,6 +134,7 @@ export default {
     NHPriceId,
     NHLogin,
     Sokoban,
+    NHTimer,
   },
 
   mounted: async function () {
