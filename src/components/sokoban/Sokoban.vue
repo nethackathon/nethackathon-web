@@ -150,9 +150,9 @@ export default {
         timeoutId: undefined,
         path: [],
         pathIndex: 0,
-        speed: 100,
+        speed: 200,
         speedMultiplier: 0,
-        speedMultipliers: [-5, -2, -1, -0.5, 0, 0.5, 1, 2, 5],
+        speedMultipliers: [-10, -5, -2, -1, -0.5, -0.25, 0, 0.25, 0.5, 1, 2, 5, 10],
         mapStates: [],
       }
     }
