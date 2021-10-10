@@ -1,13 +1,13 @@
 <template>
   <v-container fluid id="annotate">
     <v-row>
-      <v-col cols="12" md="2">
+      <v-col cols="12" md="3">
         <h1>#annotate</h1>
       </v-col>
       <v-col cols="12" md="6">
         <h1><small>Your NetHack companion app</small></h1>
       </v-col>
-      <v-col cols="12" md="4" class="text-right">
+      <v-col cols="12" md="3" class="text-right">
         <NHTimer/>
       </v-col>
     </v-row>
