@@ -29,6 +29,12 @@ export default {
     this.$vuetify.theme.dark = (localStorage.getItem('dark') === null) ? true : (localStorage.getItem('dark') === 'off')
   },
 
+  mounted: function () {
+    if (location.hash) {
+      location.replace(location.hash.replace('#', ''))
+    }
+  },
+
   data: () => ({
     djinniVisible: false,
     rubbed: 0,

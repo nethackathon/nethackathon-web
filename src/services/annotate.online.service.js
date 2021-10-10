@@ -1,6 +1,6 @@
 const isDev = false
-const apiRoute = 'https://nethackathon.org/annotate'
-const devRoute = 'http://localhost:3000/annotate'
+const apiRoute = 'https://nethackathon.org/annotate-api'
+const devRoute = 'http://localhost:3000/annotate-api'
 const route = (isDev) ? devRoute : apiRoute
 const axios = require('axios');
 const token = localStorage.getItem('nethackathon-jwt')
