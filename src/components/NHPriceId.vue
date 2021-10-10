@@ -69,6 +69,7 @@ export default {
             { symbol:'!', color: '#FF55FF', notes: 'confusion, extra healing, hallucination, healing, restore ability, sleeping' },
             { symbol:'=', color: '#FFFF55', notes: 'adornment, hunger, protection, protection from shape changers, stealth, sustain ability, warning' },
             { symbol:'/', color: '#00AAAA', notes: 'light, nothing' },
+            { symbol:'+', color: '#AA00AA', notes: 'force bolt, protection, detect monsters, light, sleep, jumping, healing, knock' },
           ]
         },
         { price: 150,
@@ -89,6 +90,7 @@ export default {
             { symbol:'!', color: '#FF55FF', notes: 'enlightenment, full healing, levitation, polymorph, speed' },
             { symbol:'=', color: '#FFFF55', notes: 'fire resistance, free action, levitation, regeneration, searching, slow digestion, teleportation' },
             { symbol:'/', color: '#00AAAA', notes: 'cancellation, create monster, polymorph, teleportation' },
+            { symbol:'+', color: '#AA00AA', notes: 'drain life, magic missile, create monster, detect food, confuse monster, slow monster, cure blindness, wizard lock' },
           ]
         },
         { price: 250,
@@ -101,11 +103,28 @@ export default {
             { symbol:'?', color: '#FFF', notes: 'charging, genocide, punishment, stinking cloud' },
             { symbol:'!', color: '#FF55FF', notes: 'gain ability, gain level, paralysis' },
             { symbol:'=', color: '#FFFF55', notes: 'conflict, polymorph, polymorph control, teleport control' },
+            { symbol:'+', color: '#AA00AA', notes: 'remove curse, clairvoyance, detect unseen, identify, cause fear, charm monster, haste self, cure sickness, extra healing, stone to flesh' },
+          ]
+        },
+        { price: 400,
+          types: [
+            { symbol:'+', color: '#AA00AA', notes: 'cone of cold, fireball, detect treasure, invisibility, levitation, restore ability' },
           ]
         },
         { price: 500,
           types: [
             { symbol:'/', color: '#00AAAA', notes: 'death, wishing' },
+            { symbol:'+', color: '#AA00AA', notes: 'magic mapping, dig' },
+          ]
+        },
+        { price: 600,
+          types: [
+            { symbol:'+', color: '#AA00AA', notes: 'create familiar, turn undead, teleport away, polymorph' },
+          ]
+        },
+        { price: 700,
+          types: [
+            { symbol:'+', color: '#AA00AA', notes: 'finger of death, cancellation' },
           ]
         },
       ],
