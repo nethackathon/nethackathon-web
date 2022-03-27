@@ -1,4 +1,4 @@
-const isDev = true
+const isDev = false
 const apiRoute = 'https://nethackathon.org'
 const devRoute = 'http://localhost:3000'
 const route = (isDev) ? devRoute : apiRoute
