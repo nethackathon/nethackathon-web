@@ -1,5 +1,5 @@
 const isDev = false
-const apiRoute = 'https://nethackathon.org/annotate-api'
+const apiRoute = 'https://api.nethackathon.org/annotate-api'
 const devRoute = 'http://localhost:3000/annotate-api'
 const route = (isDev) ? devRoute : apiRoute
 const axios = require('axios');
