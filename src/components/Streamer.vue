@@ -1,6 +1,6 @@
 <template>
   <span>
-    <span v-bind:class="{featured: streamer.featured}"><a class="streamer" :href="channelHref" target="_blank">{{streamer.channel}}</a></span><span v-if="concatenate && index < streamersLength - 2">, </span><span v-if="concatenate && index === streamersLength - 2">, and </span>
+    <span v-bind:class="{featured: streamer.featured}"><a class="streamer" :href="channelHref" target="_blank">{{streamer.username}}</a></span><span v-if="concatenate && index < streamersLength - 2">, </span><span v-if="concatenate && index === streamersLength - 2">, and </span>
   </span>
 </template>
 
@@ -15,7 +15,7 @@
 
     computed: {
       channelHref: function () {
-        return 'https://twitch.tv/' + this.streamer.channel
+        return 'https://twitch.tv/' + this.streamer.username
       }
     }
   }

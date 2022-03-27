@@ -19,24 +19,26 @@
         <v-row>
           <v-col offset-md="2" md="8" cols="12">
             <h3 class="lead mb-4 text-justify">
-              On <strong>September 10 - 12</strong>, twenty-two Twitch content creators will stream NetHack continuously
-              for over 56 hours!
+              On <strong>April 15 - 17, 2022</strong>, twenty-four Twitch content creators will stream NetHack continuously
+              for 48 hours!
             </h3>
+            <h2 v-if="tbd"><router-link :to="'/signup'">Streamers, sign up today!</router-link></h2>
             <p class="lead mb-4 text-justify">
               Streamers include, <Streamer
                 v-for="(streamer, index) in streamersByName"
-                v-bind:key="streamer.channel"
+                v-bind:key="streamer.username"
                 :streamer="streamer"
                 :index="index"
                 :concatenate="true"
                 :streamersLength="streamers.length"/>.
             </p>
-            <p>Don't want to read a schedule? The current streamer is also hosted at <a href="https://twitch.tv/nethackathon">https://twitch.tv/nethackathon</a></p>
+            <p v-if="!tbd">Don't want to read a schedule? The current streamer is also hosted at <a href="https://twitch.tv/nethackathon">https://twitch.tv/nethackathon</a></p>
           </v-col>
         </v-row>
         <v-row>
           <v-col offset-md="2" md="8" cols="12">
-            <Schedule v-if="schedule && startDate && endDate" :schedule="schedule" :startDate="startDate" :endDate="endDate" :currentlyStreaming="currentlyStreaming"/>
+            <h2 v-if="tbd">Schedule TBD</h2>
+            <Schedule v-if="!tbd && schedule && startDate && endDate" :schedule="schedule" :startDate="startDate" :endDate="endDate" :currentlyStreaming="currentlyStreaming"/>
           </v-col>
         </v-row>
       </v-container>
@@ -49,8 +51,8 @@ import Countdown from "../components/Countdown";
 import {DateTime, Interval} from "luxon";
 import Schedule from "../components/Schedule";
 import CurrentlyStreaming from "../components/CurrentlyStreaming";
-import streamers from "../data/streamers"
-import schedule from "../data/schedule"
+import schedule from "../data/schedule";
+import {getTwitchStreamers} from "../services/signup.service";
 
 export default {
   name: 'Home',
@@ -63,28 +65,32 @@ export default {
   },
 
   created: function () {
-    this.startDate = DateTime.fromISO('2021-09-10T17:00:00.000', {zone: 'utc'})
-    this.endDate = DateTime.fromISO('2021-09-13T04:00:00.000', {zone: 'utc'})
+    this.startDate = DateTime.fromISO('2022-04-15T17:00:00.000', {zone: 'utc'})
+    this.endDate = DateTime.fromISO('2022-04-18T00:00:00.000', {zone: 'utc'})
     this.timeLeft = Interval.fromDateTimes(DateTime.now(), this.startDate)
+    getTwitchStreamers().then((response) => {
+      this.streamers = response.data.streamers
+    })
   },
 
   data: () => ({
+    tbd: true, // set to false once schedule is set up
     startDate: undefined,
     endDate: undefined,
     timeLeft: undefined,
     currentlyStreaming: undefined,
     upNext: undefined,
-    streamers: streamers,
+    streamers: [],
     schedule: schedule,
   }),
 
   computed: {
     streamersByName () {
       return this.streamers.slice().sort((a, b) => {
-        if (a.channel.toLowerCase() < b.channel.toLowerCase()) {
+        if (a.username.toLowerCase() < b.username.toLowerCase()) {
           return -1
         }
-        if (b.channel.toLowerCase() < a.channel.toLowerCase()) {
+        if (b.username.toLowerCase() < a.username.toLowerCase()) {
           return 1
         }
         return 0
