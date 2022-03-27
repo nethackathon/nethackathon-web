@@ -4,7 +4,7 @@
         <v-row class="mt-5">
           <v-col offset-md="2" md="8" cols="12">
             <h1>We need you <small>to stream NetHack.</small></h1>
-            <p>We are looking for 24 Twitch streamers to commit to streaming NetHack for two hours during the weekend of April 15th - April 17th.</p>
+            <p>We are looking for 24 Twitch streamers to stream NetHack for two hours during the weekend of April 15th - April 17th.</p>
             <p>We'll be continuing the characters started by the previous streamer and raiding the next streamer on the schedule. There will be <em>many deaths</em>, and hopefully at least one ascension.</p>
             <p><strong>Sign up today!</strong> To get started
             <input type="button" class="twitch-login" onclick="location.href='http://localhost:3000/signup/auth'" value="Log In with Twitch" />
@@ -58,6 +58,9 @@
           </v-col>
         </v-row>
       </v-container>
+    <v-snackbar v-model="saving" :timeout="savingTimeout" color="warning">Saving</v-snackbar>
+    <v-snackbar v-model="saved" :timeout="savedTimeout" color="success">Saved</v-snackbar>
+    <v-snackbar v-model="error" :timeout="errorTimeout" color="error">{{errorText}}</v-snackbar>
   </v-layout>
 </template>
 
@@ -68,24 +71,24 @@ import {DateTime} from "luxon";
 import {getTwitchSchedule, postTwitchSchedule, postTwitchText} from "../services/signup.service";
 import {throttle} from "lodash/lodash";
 
-const throttledUpdateSchedule = throttle((schedule, remoteSchedule) => {
+const throttledUpdateSchedule = throttle((schedule, remoteSchedule, cb, err) => {
       if (schedule.length !== remoteSchedule.length ||
           schedule.join() !== remoteSchedule.join()) {
         // if the schedule has changed
         const postedSchedule = [...schedule]
-        postTwitchSchedule(postedSchedule).then(()=> {
-          remoteSchedule = postedSchedule
-        })
+        postTwitchSchedule(postedSchedule).then(cb).catch(err)
+      } else {
+        cb()
       }
     }, 2000, {leading: false, trailing: true})
 
-const throttledUpdateText = throttle((discordUsername, remoteDiscordUsername, notes, remoteNotes, cb) => {
+const throttledUpdateText = throttle((discordUsername, remoteDiscordUsername, notes, remoteNotes, cb, err) => {
   if (discordUsername !== remoteDiscordUsername ||
       notes !== remoteNotes) {
     // if the text has changed
-    postTwitchText(discordUsername, notes).then(() => {
-      cb(discordUsername, notes)
-    })
+    postTwitchText(discordUsername, notes).then(cb).catch(err)
+  } else {
+    cb()
   }
 }, 2000, {leading: false, trailing: true})
 
@@ -113,7 +116,6 @@ export default {
       this.discordUsername = this.remoteDiscordUsername
       this.remoteNotes = response.data.notes
       this.notes = this.remoteNotes
-
     } catch (err) {
       console.error(err)
       this.loggedIn = false
@@ -125,6 +127,13 @@ export default {
   },
 
   data: () => ({
+    error: false,
+    errorTimeout: 2000,
+    errorText: '',
+    savingTimeout: -1,
+    savedTimeout: 2000,
+    saving: false,
+    saved: false,
     username: undefined,
     schedule: [],
     remoteSchedule: [],
@@ -144,9 +153,18 @@ export default {
 
   methods: {
     updateText() {
+      this.saving = true
       throttledUpdateText(this.discordUsername, this.remoteDiscordUsername, this.notes, this.remoteNotes, () => {
         this.remoteDiscordUsername = this.discordUsername
         this.remoteNotes = this.notes
+        this.saving = false
+        this.saved = true
+      }, (err) => {
+        console.error(err)
+        this.saving = false
+        this.error = true
+        this.errorText = err.message
+        this.loggedIn = false
       })
     },
     scheduleSlot(slot) {
@@ -155,7 +173,18 @@ export default {
       } else {
         this.schedule.push(slot.start.ts)
       }
-      throttledUpdateSchedule(this.schedule, this.remoteSchedule)
+      this.saving = true
+      throttledUpdateSchedule(this.schedule, this.remoteSchedule, () => {
+        this.saving = false
+        this.saved = true
+        this.remoteSchedule = [...this.schedule]
+      }, (err) => {
+        console.error(err)
+        this.saving = false
+        this.error = true
+        this.errorText = err.message
+        this.loggedIn = false
+      })
     }
   },
 
