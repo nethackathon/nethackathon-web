@@ -102,16 +102,17 @@
       </v-col>
     </v-row>
     <div class="nh-modal" v-if="showLoginModal">
-      <NHLogin @loggedIn="onLoggedIn" @closeModal="showLoginModal = false"/>
+      <NHLogin
+          :loginMessage="loginMessage"
+          @loggedIn="onLoggedIn"
+          @closeModal="showLoginModal = false"
+      />
     </div>
   </v-container>
 </template>
 
 <script>
 import PALETTE from "../includes/palette"
-// import INTRINSICS from "../includes/intrinsics"
-// import CharPicker from "../components/CharPicker"
-// import ColorPicker from "../components/ColorPicker"
 import NHCheckbox from "../components/NHCheckbox"
 import {update, read, reset} from "../services/annotate.service"
 import { debounce } from "debounce"
@@ -141,10 +142,18 @@ export default {
   },
 
   mounted: async function () {
-    this.localData = await read()
+    try {
+      this.localData = await read()
+    } catch (err) {
+      this.logOut().then(() => {
+        this.loginMessage = 'You have been logged out, please log in to continue.'
+        this.showLoginModal = true
+      })
+    }
   },
 
   data: () => ({
+    loginMessage: '',
     loggedIn: false,
     loggedInAs: '',
     showLoginModal: false,
@@ -195,12 +204,14 @@ export default {
       reset().then((res) => this.localData = res)
     },
     onLoggedIn: async function () {
+      this.loginMessage = ''
       this.showLoginModal = false
       this.loggedIn = true
       this.loggedInAs = localStorage.getItem('loggedInAs')
       this.localData = await read()
     },
     logOut: async function () {
+      this.loginMessage = ''
       localStorage.removeItem('nethackathon-jwt')
       localStorage.removeItem('loggedInAs')
       this.loggedIn = false

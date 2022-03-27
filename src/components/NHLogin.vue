@@ -5,7 +5,7 @@
     </v-row>
     <v-row>
       <v-col cols="12">
-        <h2>{{(registering) ? 'Sign up' : 'Login'}}</h2>
+        <h2>{{ (registering) ? 'Sign up' : 'Login' }}</h2>
       </v-col>
     </v-row>
     <v-row>
@@ -15,8 +15,8 @@
       <v-col cols="12">
         <fieldset class="nh-fieldset">
           <legend>Password</legend>
-            <CharPicker :color="passwordColor" :character="passwordChar" @pickChar="pickChar"/>
-            <ColorPicker :color="passwordColor" @pickColor="pickColor"/>
+          <CharPicker :color="passwordColor" :character="passwordChar" @pickChar="pickChar"/>
+          <ColorPicker :color="passwordColor" @pickColor="pickColor"/>
         </fieldset>
       </v-col>
     </v-row>
@@ -28,7 +28,8 @@
         <span v-if="!registering" class="nh-link nh-clickable" @click="registering = true">Register</span>
       </v-col>
     </v-row>
-    <v-row v-if="error.length > 0">{{error}}</v-row>
+    <v-row v-if="error.length > 0"><strong class="red--text">{{ error }}</strong></v-row>
+    <v-row v-if="loginMessage.length > 0"><strong class="red--text">{{ loginMessage }}</strong></v-row>
   </v-container>
 </template>
 
@@ -38,12 +39,12 @@ import CharPicker from "./CharPicker";
 import ColorPicker from "./ColorPicker";
 import NHButton from "./NHButton";
 import PALETTE from "../includes/palette"
-import { register, login } from "../services/annotate.online.service"
+import {register, login} from "../services/annotate.online.service"
 
 export default {
   name: 'NHNumber',
 
-  props: ['value', 'label', 'size', 'minlength', 'maxlength'],
+  props: ['value', 'label', 'size', 'minlength', 'maxlength', 'loginMessage'],
 
   components: {
     CharPicker,
@@ -52,68 +53,71 @@ export default {
     NHButton
   },
 
-    data: () => ({
-      username: '',
-      passwordColor: PALETTE[Math.floor(Math.random() * PALETTE.length)],
-      passwordChar: '',
-      registering: false,
-      error: ''
-    }),
+  data: () => ({
+    username: '',
+    passwordColor: PALETTE[Math.floor(Math.random() * PALETTE.length)],
+    passwordChar: '',
+    registering: false,
+    error: ''
+  }),
 
-    computed: {
-      buttonDisabled: function() {
-        return (this.passwordChar.trim() === '' || this.username.trim() === '')
+  computed: {
+    buttonDisabled: function () {
+      return (this.passwordChar.trim() === '' || this.username.trim() === '')
+    }
+  },
+
+  methods: {
+    changeUsername: function (username) {
+      this.username = username
+    },
+    pickChar: function (char) {
+      this.passwordChar = char
+    },
+    pickColor: function (color) {
+      this.passwordColor = color
+    },
+    handleLogin: function (res) {
+      if (res.status === 201) {
+        // Yes, I understand that this is vulnerable to XSS attacks
+        // However, who is going to want to hack this web app?
+        localStorage.setItem('nethackathon-jwt', res.data);
+        localStorage.setItem('loggedInAs', this.username);
+        this.$emit('loggedIn')
+      } else {
+        // Some non-standard response display the error
+        this.error = res.data
       }
     },
-
-    methods: {
-      changeUsername: function(username) {
-        this.username = username
-      },
-      pickChar: function(char) {
-        this.passwordChar = char
-      },
-      pickColor: function(color) {
-        this.passwordColor = color
-      },
-      handleLogin: function(res) {
-        if (res.status === 201) {
-          // Yes, I understand that this is vulnerable to XSS attacks
-          // However, who is going to want to hack this web app?
-          localStorage.setItem('nethackathon-jwt', res.data);
-          localStorage.setItem('loggedInAs', this.username);
-          this.$emit('loggedIn')
-        } else {
-          // Some non-standard response display the error
-          this.error = res.data
-        }
-      },
-      onLogin: function() {
-        if (this.registering) {
-          register({username: this.username, passwordCharacter: this.passwordChar, passwordColor: this.passwordColor})
-              .then(this.handleLogin)
-        } else {
-          login({username: this.username, passwordCharacter: this.passwordChar, passwordColor: this.passwordColor})
-              .then(this.handleLogin)
-        }
-      },
-      closeModal: function() {
-        this.$emit('closeModal')
+    onLogin: function () {
+      if (this.registering) {
+        register({username: this.username, passwordCharacter: this.passwordChar, passwordColor: this.passwordColor})
+            .then(this.handleLogin)
+      } else {
+        login({username: this.username, passwordCharacter: this.passwordChar, passwordColor: this.passwordColor})
+            .then(this.handleLogin)
       }
+    },
+    closeModal: function () {
+      this.$emit('closeModal')
     }
   }
+}
 </script>
 
 <style>
 .nh-fieldset {
   padding: 1em;
 }
+
 .nhDark {
   color: white;
 }
+
 .nhLight {
   color: black;
 }
+
 .nh-input {
   font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
 }
