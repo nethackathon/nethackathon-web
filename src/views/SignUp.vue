@@ -122,8 +122,8 @@ export default {
     } finally {
       this.loading = false
     }
-    this.startDate = DateTime.fromISO('2022-03-25T17:00:00.000', {zone: 'utc'})
-    this.endDate = DateTime.fromISO('2022-03-28T00:00:00.000', {zone: 'utc'})
+    this.startDate = DateTime.fromISO('2022-04-15T17:00:00.000', {zone: 'utc'})
+    this.endDate = DateTime.fromISO('2022-04-18T00:00:00.000', {zone: 'utc'})
   },
 
   data: () => ({
