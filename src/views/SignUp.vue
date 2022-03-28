@@ -43,7 +43,6 @@
                   label="Notes"
                   @keyup="updateText"
               ></v-textarea>
-              <p><small>* Twitch username is required</small></p>
             </v-form>
           </v-col>
         </v-row>
