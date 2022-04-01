@@ -27,7 +27,12 @@ const routes = [
   {
     path: '/signup',
     name: 'Sign Up',
-    component: () => import(/* webpackChunkName: "help" */ '../views/SignUp.vue')
+    component: () => import(/* webpackChunkName: "signup" */ '../views/SignUp.vue')
+  },
+  {
+    path: '/coverage',
+    name: 'Coverage',
+    component: () => import(/* webpackChunkName: "coverage" */ '../views/Coverage.vue')
   },
   {
     path: '/:catchAll(.*)',

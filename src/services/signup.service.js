@@ -24,3 +24,8 @@ export async function getTwitchStreamers () {
     return axios.get(streamersRoute)
 }
 
+export async function getStreamersSchedule () {
+    const streamersRoute = route + '/streamers/schedule'
+    return axios.get(streamersRoute)
+}
+
