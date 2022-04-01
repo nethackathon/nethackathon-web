@@ -10,6 +10,7 @@
             />
           </v-col>
         </v-row>
+        <Tagline />
         <v-row>
           <v-col offset-md="2" md="8" cols="12">
             <Countdown v-if="startDate && timeLeft && timeLeft.length('milliseconds') > 0" :timeLeft="timeLeft" />
@@ -52,6 +53,7 @@ import {DateTime, Interval} from "luxon";
 import Schedule from "../components/Schedule";
 import CurrentlyStreaming from "../components/CurrentlyStreaming";
 import schedule from "../data/schedule";
+import Tagline from "../components/Tagline";
 import {getTwitchStreamers} from "../services/signup.service";
 
 export default {
@@ -61,7 +63,8 @@ export default {
     Schedule,
     Countdown,
     Streamer,
-    CurrentlyStreaming
+    CurrentlyStreaming,
+    Tagline
   },
 
   created: function () {

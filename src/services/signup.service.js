@@ -1,4 +1,4 @@
-const isDev = false
+const isDev = true
 const apiRoute = 'https://api.nethackathon.org'
 const devRoute = 'http://localhost:3000'
 const route = (isDev) ? devRoute : apiRoute
@@ -27,5 +27,10 @@ export async function getTwitchStreamers () {
 export async function getStreamersSchedule () {
     const streamersRoute = route + '/streamers/schedule'
     return axios.get(streamersRoute)
+}
+
+export async function getTagline () {
+    const taglineRoute = route + '/tagline'
+    return axios.get(taglineRoute)
 }
 
