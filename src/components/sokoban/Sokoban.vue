@@ -85,7 +85,7 @@ import maps from './maps/maps'
 import NHCheckbox from '../NHCheckbox'
 import NHHighScores from "../NHHighScores";
 import NHPlaybackControls from "../NHPlaybackControls";
-import { updateSokoban, getBestTime, getBestTurns } from "../../services/annotate.online.service"
+import { updateSokoban, getBestTime, getBestTurns } from "../../services/sokoban.service"
 
 export default {
   name: 'Sokoban',
@@ -229,15 +229,19 @@ export default {
       // update scores
       getBestTime(this.curLevel, this.curSubLevel).then((res) => {
         this.bestTime = res.data
+        /*
         this.bestTime.map((record) => {
           record.soko_path = JSON.parse(record.soko_path)
         })
+         */
       })
       getBestTurns(this.curLevel, this.curSubLevel).then((res) => {
         this.bestTurns = res.data
+        /*
         this.bestTurns.map((record) => {
           record.soko_path = JSON.parse(record.soko_path)
         })
+         */
       })
     },
     loadMap () {

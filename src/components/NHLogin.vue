@@ -39,7 +39,7 @@ import CharPicker from "./CharPicker";
 import ColorPicker from "./ColorPicker";
 import NHButton from "./NHButton";
 import PALETTE from "../includes/palette"
-import {register, login} from "../services/annotate.online.service"
+import {register, login} from "../services/auth.service"
 
 export default {
   name: 'NHNumber',
@@ -78,7 +78,7 @@ export default {
       this.passwordColor = color
     },
     handleLogin: function (res) {
-      if (res.status === 201) {
+      if (res.status === 200) {
         // Yes, I understand that this is vulnerable to XSS attacks
         // However, who is going to want to hack this web app?
         localStorage.setItem('nethackathon-jwt', res.data);

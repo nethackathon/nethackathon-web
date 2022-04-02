@@ -11,7 +11,7 @@
 </template>
 
 <script>
-  import {getTagline} from "../services/signup.service";
+  import {getTagline} from "../services/base.service";
   import {random} from "lodash/lodash";
 
   export default {

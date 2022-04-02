@@ -7,7 +7,7 @@
             <p>We are looking for 24 Twitch streamers to stream NetHack for two hours during the weekend of April 15th - April 17th.</p>
             <p>We'll be continuing the characters started by the previous streamer and raiding the next streamer on the schedule. There will be <em>many deaths</em>, and hopefully at least one ascension.</p>
             <p><strong>Sign up today!</strong> To get started
-            <input type="button" class="twitch-login" onclick="location.href='https://api.nethackathon.org/signup/auth'" value="Log In with Twitch" />
+            <input type="button" class="twitch-login" v-on:click="redirectToTwitch" value="Log In with Twitch" />
             </p>
           </v-col>
         </v-row>
@@ -151,6 +151,10 @@ export default {
   },
 
   methods: {
+    redirectToTwitch() {
+      const uri = (process.env.NODE_ENV === 'development') ? 'http://localhost:3000/twitch/auth' : 'https://api.nethackathon.org/twitch/auth'
+      location.href = uri
+    },
     updateText() {
       this.saving = true
       throttledUpdateText(this.discordUsername, this.remoteDiscordUsername, this.notes, this.remoteNotes, () => {

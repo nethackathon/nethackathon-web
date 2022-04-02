@@ -54,7 +54,7 @@ import Schedule from "../components/Schedule";
 import CurrentlyStreaming from "../components/CurrentlyStreaming";
 import schedule from "../data/schedule";
 import Tagline from "../components/Tagline";
-import {getTwitchStreamers} from "../services/signup.service";
+import {getTwitchStreamers} from "../services/base.service";
 
 export default {
   name: 'Home',

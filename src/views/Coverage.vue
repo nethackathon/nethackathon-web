@@ -27,7 +27,7 @@
 
 import CoverageGrid from "../components/CoverageGrid";
 import {DateTime} from "luxon";
-import {getStreamersSchedule} from "../services/signup.service";
+import {getStreamersSchedule} from "../services/base.service";
 
 export default {
   name: 'Coverage',
