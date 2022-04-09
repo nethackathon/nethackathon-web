@@ -28,7 +28,7 @@
             :class="{'streaming': (currentlyStreaming && currentlyStreaming.starting === s.starting)}"
             :key="s.starting">
           <td><v-icon v-if="currentlyStreaming && currentlyStreaming.starting === s.starting">mdi-twitch</v-icon></td>
-          <td>{{ formattedStart(s.starting) }}</td>
+          <td>{{ formattedStart(s.start_time) }}</td>
           <td><Streamer :streamer="s"/></td>
           <td><span v-if="s.title">{{ s.title }}</span></td>
         </tr>
@@ -76,10 +76,10 @@
         return day.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)
       },
       formattedStart(start) {
-        return DateTime.fromISO(start).toLocaleString(DateTime.TIME_SIMPLE)
+        return DateTime.fromMillis(parseInt(start)).toLocaleString(DateTime.TIME_SIMPLE)
       },
       streamersOnDay(day) {
-        return this.schedule.filter(s => day.contains(DateTime.fromISO(s.starting).toLocal()))
+        return this.schedule.streamers.filter(s => day.contains(DateTime.fromMillis(parseInt(s.start_time)).toLocal()))
       },
     },
   }

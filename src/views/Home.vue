@@ -52,9 +52,10 @@ import Countdown from "../components/Countdown";
 import {DateTime, Interval} from "luxon";
 import Schedule from "../components/Schedule";
 import CurrentlyStreaming from "../components/CurrentlyStreaming";
-import schedule from "../data/schedule";
+// import schedule from "../data/schedule";
 import Tagline from "../components/Tagline";
 import {getTwitchStreamers} from "../services/base.service";
+import schedule from "../data/schedule2022";
 
 export default {
   name: 'Home',
@@ -77,7 +78,7 @@ export default {
   },
 
   data: () => ({
-    tbd: true, // set to false once schedule is set up
+    tbd: false, // set to false once schedule is set up
     startDate: undefined,
     endDate: undefined,
     timeLeft: undefined,
