@@ -7,6 +7,7 @@
 - Finish Annotate view
 - Consider CloudFlare for DDoS protection
 - Highlight duplicate prices in Price ID table
+- Add golden egg to bottom of mine's end
 
 ## Project setup
 ```
