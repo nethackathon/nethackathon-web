@@ -2,12 +2,13 @@
 
 ## TODO
 - Modify build script to insert no_script.html, with schedule from generate_schedule.js, into generated index.html
-- Think through separating out streamers and schedule, some schedule items have multiple streamers but only one channel 
-- Insert data into database
-- Finish Annotate view
-- Consider CloudFlare for DDoS protection
 - Highlight duplicate prices in Price ID table
-- Add golden egg to bottom of mine's end
+
+## Streamer view for NetHackathon
+- Easter egg tab, for reporting finds
+- Deaths by reason reporting
+- Current state of character, intrinsics, etc, like Annotate
+- Ascensions by class
 
 ## Project setup
 ```

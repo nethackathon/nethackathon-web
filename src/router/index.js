@@ -35,6 +35,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "coverage" */ '../views/Coverage.vue')
   },
   {
+    path: '/streamers',
+    name: 'Streamers',
+    component: () => import(/* webpackChunkName: "streamers" */ '../views/Streamers.vue')
+  },
+  {
     path: '/:catchAll(.*)',
     component: NotFound,
     name: 'NotFound'

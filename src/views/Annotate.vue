@@ -27,31 +27,12 @@
     </v-row>
     <v-row v-if="selectedTab === 'Intrinsics'">
       <v-col>
-        <NHCheckbox
-            v-for="intrinsic in localData.intrinsics"
-            @clicked="updateIntrinsic(intrinsic)"
-            v-bind:key="intrinsic.name"
-            :checked="intrinsic.value"
-            :label="intrinsic.name"
-        />
-        <NHNumber
-            :value="localData.protection"
-            min="0"
-            max="99"
-            label="Protection"
-            @changed="updateProtection"
-        />
-        <NHCheckbox
-            @clicked="updateCanPray"
-            :checked="localData.canPray"
-            label="Can pray"
-        />
-        <NHNumber
-            :value="localData.lastPrayed"
-            min="0"
-            max="99999"
-            label="Last prayed"
-            @changed="updateLastPrayed"
+        <Intrinsics 
+            :character-data="localData"
+            @update-intrinsic="updateIntrinsic"
+            @update-protection="updateProtection"
+            @update-can-pray="updateCanPray"
+            @update-last-prayed="updateLastPrayed"
         />
       </v-col>
     </v-row>
@@ -122,6 +103,7 @@ import NHPriceId from "../components/NHPriceId";
 import NHLogin from "../components/NHLogin";
 import Sokoban from "../components/sokoban/Sokoban";
 import NHTimer from "../components/NHTimer";
+import Intrinsics from "../components/annotate/Intrinsics";
 
 export default {
   name: 'Annotate',
@@ -139,6 +121,7 @@ export default {
     NHLogin,
     Sokoban,
     NHTimer,
+    Intrinsics,
   },
 
   mounted: async function () {
