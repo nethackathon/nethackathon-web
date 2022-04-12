@@ -21,7 +21,13 @@
     computed: {
       deaths: function() {
         return [...this.livelog]
-            .filter((l) => l.type === ((this.ascensions) ? '1024' : '16384'))
+            .filter((l) => {
+              return ( 
+                  l.type === '16384' &&
+                  ( (  this.ascensions && l.message.includes('ascended') ) ||
+                  ( !this.ascensions && !l.message.includes('ascended') ) )
+              )
+            })
             .sort((l, m) => parseInt(m.time) - parseInt(l.time) )
       }
     },

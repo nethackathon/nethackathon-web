@@ -42,9 +42,9 @@
             <Schedule v-if="!tbd && schedule && startDate && endDate" :schedule="schedule" :startDate="startDate" :endDate="endDate" :currentlyStreaming="currentlyStreaming"/>
           </v-col>
           <v-col md="4" cols="12">
-            <Deaths :ascensions="true" :livelog="[...livelogAU, ...livelogEU, ...livelogUS]" />
-            <Deaths :ascensions="false" :livelog="[...livelogAU, ...livelogEU, ...livelogUS]" />
-            <Livelog :livelog="[...livelogAU, ...livelogEU, ...livelogUS]" />
+            <Deaths :ascensions="true" :livelog="endedGames" />
+            <Deaths :ascensions="false" :livelog="endedGames" />
+            <Livelog :livelog="livelog" />
           </v-col>
         </v-row>
         <v-row>
@@ -62,7 +62,12 @@ import {DateTime, Interval} from "luxon";
 import Schedule from "../components/Schedule";
 import CurrentlyStreaming from "../components/CurrentlyStreaming";
 import Tagline from "../components/Tagline";
-import {getTwitchStreamers, getLivelogUS, getLivelogAU, getLivelogEU, getSchedule} from "../services/base.service";
+import {
+  getTwitchStreamers,
+  getSchedule,
+  getLivelogs,
+  getEndedGames,
+} from "../services/base.service";
 import Livelog from "../components/Livelog";
 import Deaths from "../components/Deaths";
 
@@ -89,17 +94,19 @@ export default {
     getTwitchStreamers().then((response) => {
       this.streamers = response.data.streamers
     })
+    getLivelogs().then((response) => { this.livelog = response.flatMap((r) => r.data) })
     setInterval(() => {
-      getLivelogUS().then((response) => { this.livelogUS = response.data })
-      getLivelogAU().then((response) => { this.livelogAU = response.data })
-      getLivelogEU().then((response) => { this.livelogEU = response.data })
+      getLivelogs().then((response) => { this.livelog = response.flatMap((r) => r.data) })
     }, 2500)
+    getEndedGames().then((response) => { this.endedGames = response.flatMap((r) => r.data) })
+    setInterval(() => {
+      getEndedGames().then((response) => { this.endedGames = response.flatMap((r) => r.data) })
+    }, 10000)
   },
 
   data: () => ({
-    livelogUS: [],
-    livelogAU: [],
-    livelogEU: [],
+    livelog: [],
+    endedGames: [],
     tbd: false, // set to false once schedule is set up
     startDate: undefined,
     endDate: undefined,
