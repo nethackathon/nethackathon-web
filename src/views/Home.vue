@@ -37,9 +37,16 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col offset-md="2" md="8" cols="12">
+          <v-col offset-md="2" md="4" cols="12">
             <h2 v-if="tbd">Schedule TBD</h2>
             <Schedule v-if="!tbd && schedule && startDate && endDate" :schedule="schedule" :startDate="startDate" :endDate="endDate" :currentlyStreaming="currentlyStreaming"/>
+          </v-col>
+          <v-col md="4" cols="12">
+            <Livelog :livelog="[...livelogAU, ...livelogEU, ...livelogUS]" />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col offset-md="2" md="8" cols="12">
           </v-col>
         </v-row>
       </v-container>
@@ -52,10 +59,9 @@ import Countdown from "../components/Countdown";
 import {DateTime, Interval} from "luxon";
 import Schedule from "../components/Schedule";
 import CurrentlyStreaming from "../components/CurrentlyStreaming";
-// import schedule from "../data/schedule";
 import Tagline from "../components/Tagline";
-import {getTwitchStreamers} from "../services/base.service";
-import schedule from "../data/schedule2022";
+import {getTwitchStreamers, getLivelogUS, getLivelogAU, getLivelogEU, getSchedule} from "../services/base.service";
+import Livelog from "../components/Livelog";
 
 export default {
   name: 'Home',
@@ -65,19 +71,31 @@ export default {
     Countdown,
     Streamer,
     CurrentlyStreaming,
-    Tagline
+    Tagline,
+    Livelog
   },
 
   created: function () {
-    this.startDate = DateTime.fromISO('2022-04-15T17:00:00.000', {zone: 'utc'})
-    this.endDate = DateTime.fromISO('2022-04-18T00:00:00.000', {zone: 'utc'})
+    this.startDate = DateTime.fromISO('2022-04-15T19:00:00.000', {zone: 'utc'})
+    this.endDate = DateTime.fromISO('2022-04-17T21:00:00.000', {zone: 'utc'})
     this.timeLeft = Interval.fromDateTimes(DateTime.now(), this.startDate)
+    getSchedule().then((response) => {
+      this.schedule = response.data
+    })
     getTwitchStreamers().then((response) => {
       this.streamers = response.data.streamers
     })
+    setInterval(() => {
+      getLivelogUS().then((response) => { this.livelogUS = response.data })
+      getLivelogAU().then((response) => { this.livelogAU = response.data })
+      getLivelogEU().then((response) => { this.livelogEU = response.data })
+    }, 2500)
   },
 
   data: () => ({
+    livelogUS: [],
+    livelogAU: [],
+    livelogEU: [],
     tbd: false, // set to false once schedule is set up
     startDate: undefined,
     endDate: undefined,
@@ -85,7 +103,7 @@ export default {
     currentlyStreaming: undefined,
     upNext: undefined,
     streamers: [],
-    schedule: schedule,
+    schedule: {streamers: []},
   }),
 
   computed: {

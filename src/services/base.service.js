@@ -19,3 +19,23 @@ export async function getTagline () {
     return axios.get(route)
 }
 
+export async function getLivelogUS () {
+    const route = baseRoute + '/livelog'
+    return axios.get(route)
+}
+
+export async function getLivelogEU () {
+    const route = 'https://eu.nethackathon.org/livelog'
+    return axios.get(route)
+}
+
+export async function getLivelogAU () {
+    const route = 'https://au.nethackathon.org/livelog'
+    return axios.get(route)
+}
+
+export async function getSchedule () {
+    const route = baseRoute + '/schedule'
+    return axios.get(route)
+}
+
