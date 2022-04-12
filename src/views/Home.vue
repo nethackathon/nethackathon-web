@@ -42,6 +42,8 @@
             <Schedule v-if="!tbd && schedule && startDate && endDate" :schedule="schedule" :startDate="startDate" :endDate="endDate" :currentlyStreaming="currentlyStreaming"/>
           </v-col>
           <v-col md="4" cols="12">
+            <Deaths :ascensions="true" :livelog="[...livelogAU, ...livelogEU, ...livelogUS]" />
+            <Deaths :ascensions="false" :livelog="[...livelogAU, ...livelogEU, ...livelogUS]" />
             <Livelog :livelog="[...livelogAU, ...livelogEU, ...livelogUS]" />
           </v-col>
         </v-row>
@@ -62,6 +64,7 @@ import CurrentlyStreaming from "../components/CurrentlyStreaming";
 import Tagline from "../components/Tagline";
 import {getTwitchStreamers, getLivelogUS, getLivelogAU, getLivelogEU, getSchedule} from "../services/base.service";
 import Livelog from "../components/Livelog";
+import Deaths from "../components/Deaths";
 
 export default {
   name: 'Home',
@@ -72,7 +75,8 @@ export default {
     Streamer,
     CurrentlyStreaming,
     Tagline,
-    Livelog
+    Livelog,
+    Deaths
   },
 
   created: function () {

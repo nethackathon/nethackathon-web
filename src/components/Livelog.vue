@@ -2,7 +2,7 @@
   <div>
     <h1>Livelog</h1>
     <div class="nh-textarea">
-      <v-textarea outlined v-model="allLivelog" readonly cols="80" rows="49"/>
+      <v-textarea outlined v-model="allLivelog" readonly cols="80" rows="40"/>
     </div>
   </div>
 </template>

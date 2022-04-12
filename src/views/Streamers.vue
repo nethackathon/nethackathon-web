@@ -43,6 +43,14 @@
           </v-col>
         </v-row>
         
+        <v-row v-if="selectedTab === 'Notes'">
+          <v-col>
+            <div class="nh-textarea">
+              <v-textarea outlined v-model="localData.notes" @keydown="updateNotes" cols="80" rows="24"/>
+            </div>
+          </v-col>
+        </v-row>
+        
         <v-row v-if="selectedTab === 'Egg hunt'">
           <v-col>
             <Achievement
@@ -68,6 +76,7 @@ import { get, getEggs, updateAchievement } from '../services/streamer.service';
 import { update } from "../services/annotate.service";
 import Intrinsics from "../components/annotate/Intrinsics";
 import Achievement from "../components/streamers/Achievement";
+import {debounce} from "debounce";
 
 export default {
   name: 'Streamers',
@@ -104,7 +113,7 @@ export default {
     loading: true,
     loggedIn: false,
     selectedTab: 'Intrinsics',
-    tabs: ['Intrinsics', 'Egg hunt'],
+    tabs: ['Intrinsics', 'Notes', 'Egg hunt'],
   }),
 
   computed: {
@@ -152,6 +161,9 @@ export default {
       this.localData.lastPrayed = value
       update(this.localData)
     },
+    updateNotes: debounce(function () {
+      update(this.localData)
+    }, 1000),
   },
 
   mounted: function () {
