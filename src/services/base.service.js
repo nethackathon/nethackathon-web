@@ -19,11 +19,12 @@ export async function getTagline () {
     return axios.get(route)
 }
 
-export async function getLivelogs () {
+export async function getLivelogs (lastlogs) {
+    const qs = (lastlogs !== undefined) ? `?curtime=${lastlogs}` : ''
     return Promise.all([
-      axios.get(`https://api.nethackathon.org/livelog`),
-      axios.get(`https://eu.nethackathon.org/livelog`),
-      axios.get(`https://au.nethackathon.org/livelog`)
+      axios.get(`https://api.nethackathon.org/livelog${qs}`),
+      axios.get(`https://eu.nethackathon.org/livelog${qs}`),
+      axios.get(`https://au.nethackathon.org/livelog${qs}`)
     ])
 }
 

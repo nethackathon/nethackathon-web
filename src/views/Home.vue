@@ -97,9 +97,9 @@ export default {
     getTwitchStreamers().then((response) => {
       this.streamers = response.data.streamers
     })
-    getLivelogs().then((response) => { this.livelog = response.flatMap((r) => r.data) })
+    getLivelogs().then(this.updateLiveLogs)
     setInterval(() => {
-      getLivelogs().then((response) => { this.livelog = response.flatMap((r) => r.data) })
+      getLivelogs(this.lastlogs).then(this.updateLiveLogs)
     }, 2500)
     getEndedGames().then((response) => { this.endedGames = response.flatMap((r) => r.data) })
     setInterval(() => {
@@ -108,6 +108,7 @@ export default {
   },
 
   data: () => ({
+    lastlogs: undefined,
     livelog: [],
     endedGames: [],
     tbd: false, // set to false once schedule is set up
@@ -135,6 +136,15 @@ export default {
   },
 
   methods: {
+    lastlogReducer: function (prev, curr) {
+      const cv = (curr !== undefined && curr.time) ? curr.time : 0
+      return (prev > cv) ? prev : cv
+    },
+    updateLiveLogs: function (response) {
+      this.livelog = [...this.livelog, ...(response.flatMap((r) => r.data))]
+      if (this.livelog.length > 0)
+        this.lastlogs = this.livelog.reduce(this.lastlogReducer, 0)
+    },
     startCountDown: function () {
       setInterval(() => {
         if (this.startDate && this.timeLeft) {

@@ -20,7 +20,7 @@
     computed: {
       allLivelog: function() {
         return [...this.livelog]
-            .sort((l, m) => parseInt(m.time) - parseInt(l.time) )
+            .sort((l, m) => m.time - l.time )
             .map((l) => l.message)
             .join('\n');
       }
