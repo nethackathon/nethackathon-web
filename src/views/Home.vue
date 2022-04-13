@@ -49,6 +49,7 @@
         </v-row>
         <v-row>
           <v-col offset-md="2" md="8" cols="12">
+            <Trophies/>
           </v-col>
         </v-row>
       </v-container>
@@ -70,6 +71,7 @@ import {
 } from "../services/base.service";
 import Livelog from "../components/Livelog";
 import Deaths from "../components/Deaths";
+import Trophies from "../components/Trophies";
 
 export default {
   name: 'Home',
@@ -81,7 +83,8 @@ export default {
     CurrentlyStreaming,
     Tagline,
     Livelog,
-    Deaths
+    Deaths,
+    Trophies
   },
 
   created: function () {
