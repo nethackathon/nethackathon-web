@@ -63,6 +63,18 @@
             />
           </v-col>
         </v-row>
+
+        <v-row v-if="selectedTab === 'Price ID'">
+          <v-col>
+            <NHPriceId 
+                :cha="localData.cha"
+                :is-tourist="localData.touristCapShirt"
+                :dark-mode="this.$vuetify.theme.dark"
+                @updateCha="updateCha"
+                @updateTourist="updateTourist"
+            />
+          </v-col>
+        </v-row>
       </v-container>
     <v-snackbar v-model="saving" :timeout="savingTimeout" color="warning">Saving</v-snackbar>
     <v-snackbar v-model="saved" :timeout="savedTimeout" color="success">Saved</v-snackbar>
@@ -77,6 +89,7 @@ import { update } from "../services/annotate.service";
 import Intrinsics from "../components/annotate/Intrinsics";
 import Achievement from "../components/streamers/Achievement";
 import {debounce} from "debounce";
+import NHPriceId from "../components/NHPriceId";
 
 export default {
   name: 'Streamers',
@@ -84,6 +97,7 @@ export default {
   components: {
     Intrinsics,
     Achievement,
+    NHPriceId
   },
 
   async created() {
@@ -113,13 +127,21 @@ export default {
     loading: true,
     loggedIn: false,
     selectedTab: 'Intrinsics',
-    tabs: ['Intrinsics', 'Notes', 'Egg hunt'],
+    tabs: ['Intrinsics', 'Notes', 'Egg hunt', 'Price ID'],
   }),
 
   computed: {
   },
 
   methods: {
+    updateCha: function (value) {
+      this.localData.cha = value
+      update(this.localData)
+    },
+    updateTourist: function () {
+      this.localData.touristCapShirt = !this.localData.touristCapShirt
+      update(this.localData)
+    },
     processEggs(eggs) {
       const eggArray = []
       eggs.forEach((egg) => {

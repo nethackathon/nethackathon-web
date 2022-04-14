@@ -45,29 +45,12 @@
     </v-row>
     <v-row v-if="selectedTab === 'Price ID'">
       <v-col>
-        <div class="mb-3">
-          <div style="display: inline-block; margin-right: 2em;">
-            <NHNumber
-                :value="localData.cha"
-                min="1"
-                max="25"
-                label="Ch"
-                @changed="updateCha"
-            />
-          </div>
-          <div style="display: inline-block;">
-            <NHCheckbox
-                @clicked="updateTourist"
-                :checked="localData.touristCapShirt"
-                label="Dupe?*"
-                hint="* Are you a tourist below level 15, or are wearing a dunce cap, or are wearing a visible shirt?"
-            />
-          </div>
-        </div>
         <NHPriceId
             :cha="localData.cha"
             :is-tourist="localData.touristCapShirt"
             :dark-mode="this.$vuetify.theme.dark"
+            @updateCha="updateCha"
+            @updateTourist="updateTourist"
         />
       </v-col>
     </v-row>
@@ -94,10 +77,8 @@
 
 <script>
 import PALETTE from "../includes/palette"
-import NHCheckbox from "../components/NHCheckbox"
 import {update, read, reset} from "../services/annotate.service"
 import { debounce } from "debounce"
-import NHNumber from "../components/NHNumber";
 import NHButton from "../components/NHButton";
 import NHPriceId from "../components/NHPriceId";
 import NHLogin from "../components/NHLogin";
@@ -115,8 +96,6 @@ export default {
 
   components: {
     NHButton,
-    NHNumber,
-    NHCheckbox,
     NHPriceId,
     NHLogin,
     Sokoban,

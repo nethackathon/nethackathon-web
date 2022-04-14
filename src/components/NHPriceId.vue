@@ -1,5 +1,24 @@
 <template>
   <div class="nh-text">
+    <div class="mb-3">
+      <div style="display: inline-block; margin-right: 2em;">
+        <NHNumber
+            :value="cha"
+            min="1"
+            max="25"
+            label="Ch"
+            @changed="(val) => $emit('updateCha', val)"
+        />
+      </div>
+      <div style="display: inline-block;">
+        <NHCheckbox
+            @clicked="$emit('updateTourist')"
+            :checked="isTourist"
+            label="Dupe?*"
+            hint="* Are you a tourist below level 15, or are wearing a dunce cap, or are wearing a visible shirt?"
+        />
+      </div>
+    </div>
     <table :class="{darkMode}">
       <tr>
         <th>Sell</th><th>Buy</th><th>Base</th><th>Item types</th>
@@ -24,6 +43,8 @@
 <script>
 import NHPriceIdTypes from "./NHPriceIdTypes";
 import {fraction, multiply, round} from 'mathjs'
+import NHCheckbox from "./NHCheckbox";
+import NHNumber from "./NHNumber";
 
 export default {
   name: 'NHPriceId',
@@ -31,7 +52,9 @@ export default {
   props: ['cha', 'isTourist', 'darkMode'],
 
   components: {
-    NHPriceIdTypes
+    NHPriceIdTypes,
+    NHCheckbox,
+    NHNumber
   },
 
     data: () => ({
