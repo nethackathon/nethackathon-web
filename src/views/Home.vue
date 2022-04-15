@@ -39,7 +39,13 @@
         <v-row>
           <v-col offset-md="2" md="4" cols="12">
             <h2 v-if="tbd">Schedule TBD</h2>
-            <Schedule v-if="!tbd && schedule && startDate && endDate" :schedule="schedule" :startDate="startDate" :endDate="endDate" :currentlyStreaming="currentlyStreaming"/>
+            <Schedule
+                v-if="!tbd && schedule && startDate && endDate"
+                :schedule="schedule"
+                :startDate="startDate"
+                :endDate="endDate"
+                :currentlyStreaming="currentlyStreaming"
+            />
           </v-col>
           <v-col md="4" cols="12">
             <Deaths :ascensions="true" :livelog="endedGames" />
@@ -153,18 +159,21 @@ export default {
       }, 1000)
     },
     updateStreaming() {
+      this.updateCurrentlyStreaming()
       setInterval(() => {
         this.updateCurrentlyStreaming()
       }, 15000)
     },
     updateCurrentlyStreaming: function () {
-      for (let i = 0; i < this.schedule.length; i++) {
-        let s = this.schedule[i]
-        let streamerStarting = DateTime.fromISO(s.starting)
+      for (let i = 0; i < this.schedule.streamers.length; i++) {
+        let s = this.schedule.streamers[i]
+        let streamerStarting = DateTime.fromMillis(parseInt(s.start_time))
+        // console.log(streamerStarting)
         let streamerSlot = Interval.fromDateTimes(streamerStarting, streamerStarting.plus({ hours: s.duration }))
         if (streamerSlot.contains(DateTime.now())) {
           this.currentlyStreaming = s
-          this.upNext = (this.schedule.length > (i + 1)) ? this.schedule[i + 1] : undefined
+          console.log('this.currentlyStreaming', this.currentlyStreaming)
+          this.upNext = (this.schedule.streamers.length > (i + 1)) ? this.schedule.streamers[i + 1] : undefined
         }
       }
     },

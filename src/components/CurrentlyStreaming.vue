@@ -11,7 +11,7 @@
       <v-col offset="2" v-if="upNext !== undefined">
         <h4>Up next:
           <Streamer :streamer="upNext"/>
-          @{{toSimpleTime(upNext.starting)}}
+          @{{toSimpleTime(upNext.start_time)}}
         </h4>
       </v-col>
     </v-row>
@@ -40,7 +40,7 @@
 
     methods: {
       toSimpleTime(starting) {
-        return DateTime.fromISO(starting).toLocal().toLocaleString(DateTime.TIME_SIMPLE)
+        return DateTime.fromMillis(parseInt(starting)).toLocal().toLocaleString(DateTime.TIME_SIMPLE)
       }
     },
   }

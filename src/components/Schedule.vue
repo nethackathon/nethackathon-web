@@ -25,9 +25,9 @@
         <tr
             @click="openTwitch"
             v-for="s in streamersOnDay(d)"
-            :class="{'streaming': (currentlyStreaming && currentlyStreaming.starting === s.starting)}"
+            :class="{'streaming': (currentlyStreaming && currentlyStreaming.start_time === s.start_time)}"
             :key="s.starting">
-          <td><v-icon v-if="currentlyStreaming && currentlyStreaming.starting === s.starting">mdi-twitch</v-icon></td>
+          <td><v-icon v-if="currentlyStreaming && currentlyStreaming.start_time === s.start_time">mdi-twitch</v-icon></td>
           <td>{{ formattedStart(s.start_time) }}</td>
           <td><Streamer :streamer="s"/></td>
           <td><span v-if="s.title">{{ s.title }}</span></td>
