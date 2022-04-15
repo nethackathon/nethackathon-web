@@ -14,6 +14,23 @@
           <v-col offset-md="2" md="8" cols="12">
             <h1>Streamer FAQ</h1>
           </v-col>
+          <v-row>
+            <v-col offset-md="2" md="8" cols="12">
+              <h2>How do I connect to the server</h2>
+              <p>You need to SSH into the server you've been assigned to, the servers are:</p>
+              <ul>
+                <li>nethackathon.org (US)</li>
+                <li>eu.nethackathon.org (EU/UK)</li>
+                <li>au.nethackathon.org (AU)</li>
+              </ul>
+              <p></p>
+              <p>Cloudmillion recorded a video walk-through on connecting to the server in PuTTY and running
+                the shared save:</p>
+              <video controls width="450">
+                <source :src="tutorialVideo" type="video/mp4">
+              </video>
+            </v-col>
+          </v-row>
         <v-row v-for="f in faq" v-bind:key="f.question">
           <v-col offset-md="2" md="8" cols="12">
             <h2>{{ f.question }}</h2>
@@ -28,6 +45,8 @@
 
 <script>
 
+import tutorialVideo from '../assets/2022-04-15_13-03-13.mp4';
+
 export default {
   name: 'Help',
 
@@ -38,18 +57,8 @@ export default {
   },
 
   data: () => ({
+    tutorialVideo,
     faq: [
-      {
-        question: `How do I connect to the server?`,
-        answer: `
-          <p>You need to SSH into the server you've been assigned to, the servers are:</p>
-          <ul>
-            <li>nethackathon.org (US)</li>
-            <li>eu.nethackathon.org (EU/UK)</li>
-            <li>au.nethackathon.org (AU)</li>
-          </ul>
-        `
-      },
       {
         question: `SSH? Never heard of it.`,
         answer: `
