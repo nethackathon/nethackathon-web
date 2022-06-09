@@ -12,6 +12,7 @@
 <script>
 import {Duration} from "luxon";
 import NHButton from "./NHButton";
+import animationInterval from "../functions/animation-interval";
 
 export default {
   name: 'NHTimer',
@@ -24,9 +25,10 @@ export default {
 
     data: () => ({
       startingTime: undefined,
-      intervalId: undefined,
       elapsedTime: 0,
-      totalElapsedTime: 0
+      totalElapsedTime: 0,
+      timerRunning: false,
+      abortController: undefined
     }),
 
     computed: {
@@ -43,20 +45,25 @@ export default {
 
     methods: {
       stopTimer() {
-        clearInterval(this.intervalId)
-        this.startingTime = undefined
-        this.intervalId = undefined
-        this.totalElapsedTime += this.elapsedTime
-        this.elapsedTime = 0
+        if (this.timerRunning) {
+          this.abortController.abort()
+          this.timerRunning = false
+          this.startingTime = undefined
+          this.totalElapsedTime += this.elapsedTime
+          this.elapsedTime = 0
+        }
       },
       startTimer() {
-        if (this.startingTime === undefined) {
-          this.startingTime = Date.now()
-        }
-        if (this.intervalId === undefined) {
-          this.intervalId = setInterval(() => {
-            this.elapsedTime = Date.now() - this.startingTime
-          }, 500)
+        if (!this.timerRunning) {
+          this.timerRunning = true
+          this.abortController = new AbortController()
+          if (this.startingTime === undefined) {
+            this.startingTime = document.timeline ? document.timeline.currentTime : performance.now()
+          }
+          animationInterval(1000, this.abortController.signal, () => {
+            const now = document.timeline ? document.timeline.currentTime : performance.now();
+            this.elapsedTime = now - this.startingTime
+          })
         }
       },
       resetTimer() {

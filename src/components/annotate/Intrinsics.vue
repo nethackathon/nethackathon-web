@@ -55,7 +55,7 @@ export default {
       this.$emit('update-last-prayed', val)
     },
     updateCanPray() {
-      this.$emit('update-can-prayed')
+      this.$emit('update-can-pray')
     },
     updateProtection(val) {
       this.$emit('update-protection', val)
