@@ -1,5 +1,5 @@
 <template>
-  <div class="nh-button" :class="{disabled}" :title="hint">
+  <div class="nh-button" :class="{disabled, active}" :title="hint">
     <div>┌─{{buttonEdge}}─┐</div>
     <div class="nh-click" @click="clickButton">│ {{label}} │</div>
     <div>└─{{buttonEdge}}─┘</div>
@@ -10,7 +10,7 @@
 export default {
   name: 'NHButton',
 
-  props: ['label', 'disabled', 'hint'],
+  props: ['label', 'disabled', 'hint', 'active'],
 
     data: () => ({
     }),
@@ -50,5 +50,8 @@ export default {
 }
 .disabled {
   color: #666;
+}
+.active {
+  color: green;
 }
 </style>

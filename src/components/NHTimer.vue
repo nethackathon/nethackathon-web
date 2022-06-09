@@ -2,8 +2,8 @@
   <div>
     <div class="nh-timer">{{elapsedDurationString}}</div>
     <div class="nh-controls">
-      <NHButton label="☐" hint="Stop" @clicked="stopTimer" />
-      <NHButton label=">" hint="Start" @clicked="startTimer" />
+      <NHButton label="☐" hint="Stop" @clicked="stopTimer" :active="!timerRunning" />
+      <NHButton label=">" hint="Start" @clicked="startTimer" :active="timerRunning" />
       <NHButton label="Reset" @clicked="resetTimer" />
     </div>
   </div>
