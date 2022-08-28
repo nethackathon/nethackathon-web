@@ -16,14 +16,17 @@
       </template>
       <span>{{lampMessage}}</span>
     </v-tooltip>
-    <router-view />
+    <Annotate />
   </v-app>
 </template>
 
 <script>
+import Annotate from './views/Annotate.vue';
 
 export default {
   name: 'App',
+
+  components: { Annotate },
 
   created: function () {
     this.$vuetify.theme.dark = (localStorage.getItem('dark') === null) ? true : (localStorage.getItem('dark') === 'off')
