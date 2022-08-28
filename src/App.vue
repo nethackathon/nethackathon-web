@@ -16,17 +16,17 @@
       </template>
       <span>{{lampMessage}}</span>
     </v-tooltip>
-    <Annotate />
+    <SignUp />
   </v-app>
 </template>
 
 <script>
-import Annotate from './views/Annotate.vue';
+import SignUp from './views/SignUp.vue';
 
 export default {
   name: 'App',
 
-  components: { Annotate },
+  components: { SignUp },
 
   created: function () {
     this.$vuetify.theme.dark = (localStorage.getItem('dark') === null) ? true : (localStorage.getItem('dark') === 'off')

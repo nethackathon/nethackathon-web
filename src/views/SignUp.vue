@@ -4,7 +4,7 @@
         <v-row class="mt-5">
           <v-col offset-md="2" md="8" cols="12">
             <h1>We need you <small>to stream NetHack.</small></h1>
-            <p>We are looking for 24 Twitch streamers to stream NetHack for two hours during the weekend of April 15th - April 17th.</p>
+            <p>We are looking for 24 Twitch streamers to stream NetHack for two hours during the weekend of September 16th - September 18th.</p>
             <p>We'll be continuing the characters started by the previous streamer and raiding the next streamer on the schedule. There will be <em>many deaths</em>, and hopefully at least one ascension.</p>
             <p v-if="!signupsClosed"><strong>Sign up today!</strong> To get started
               <input type="button" class="twitch-login" v-on:click="redirectToTwitch" value="Log In with Twitch" /></p>
@@ -25,6 +25,16 @@
         </v-row>
         <v-row>
           <v-col offset-md="2" md="8" cols="12">
+            <p>
+              Fill out the form to sign up, the form is saved automatically.
+            </p>
+            <p>
+              We organize the event using <a href="https://discord.com/">Discord</a>.
+              Join the NetHackathon Discord server at: <a href="https://discord.gg/QWRa8kBvkh">https://discord.gg/QWRa8kBvkh</a> and introduce yourself!</p>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col offset-md="2" md="8" cols="12">
             <v-form ref="form">
               <v-text-field
                   v-model="username"
@@ -32,11 +42,15 @@
                   readonly
               ></v-text-field>
               <v-text-field
+                  v-model="pronouns"
+                  label="Preferred pronouns (e.g. they/them/their)"
+                  @keyup="updateText"
+              ></v-text-field>
+              <v-text-field
                   v-model="discordUsername"
                   label="Discord username"
                   @keyup="updateText"
               ></v-text-field>
-              <p><small>Join the NetHackathon discord at: <a href="https://discord.gg/QWRa8kBvkh">https://discord.gg/QWRa8kBvkh</a></small></p>
               <v-textarea
                   filled
                   v-model="notes"
@@ -81,11 +95,12 @@ const throttledUpdateSchedule = throttle((schedule, remoteSchedule, cb, err) => 
       }
     }, 2000, {leading: false, trailing: true})
 
-const throttledUpdateText = throttle((discordUsername, remoteDiscordUsername, notes, remoteNotes, cb, err) => {
+const throttledUpdateText = throttle((pronouns, remotePronouns, discordUsername, remoteDiscordUsername, notes, remoteNotes, cb, err) => {
   if (discordUsername !== remoteDiscordUsername ||
-      notes !== remoteNotes) {
+      notes !== remoteNotes ||
+      pronouns !== remotePronouns) {
     // if the text has changed
-    postTwitchText(discordUsername, notes).then(cb).catch(err)
+    postTwitchText(discordUsername, notes, pronouns).then(cb).catch(err)
   } else {
     cb()
   }
@@ -113,6 +128,8 @@ export default {
       this.username = response.data.username
       this.remoteDiscordUsername = response.data.discordUsername
       this.discordUsername = this.remoteDiscordUsername
+      this.remotePronouns = response.data.pronouns
+      this.pronouns = this.remotePronouns
       this.remoteNotes = response.data.notes
       this.notes = this.remoteNotes
     } catch (err) {
@@ -121,12 +138,12 @@ export default {
     } finally {
       this.loading = false
     }
-    this.startDate = DateTime.fromISO('2022-04-15T17:00:00.000', {zone: 'utc'})
-    this.endDate = DateTime.fromISO('2022-04-18T00:00:00.000', {zone: 'utc'})
+    this.startDate = DateTime.fromISO('2022-09-16T17:00:00.000', {zone: 'utc'})
+    this.endDate = DateTime.fromISO('2022-09-19T00:00:00.000', {zone: 'utc'})
   },
 
   data: () => ({
-    signupsClosed: true,
+    signupsClosed: false,
     error: false,
     errorTimeout: 2000,
     errorText: '',
@@ -144,6 +161,8 @@ export default {
     endDate: undefined,
     remoteDiscordUsername: '',
     discordUsername: '',
+    remotePronouns: '',
+    pronouns: '',
     remoteNotes: '',
     notes: ''
   }),
@@ -158,7 +177,7 @@ export default {
     },
     updateText() {
       this.saving = true
-      throttledUpdateText(this.discordUsername, this.remoteDiscordUsername, this.notes, this.remoteNotes, () => {
+      throttledUpdateText(this.pronouns, this.remotePronouns, this.discordUsername, this.remoteDiscordUsername, this.notes, this.remoteNotes, () => {
         this.remoteDiscordUsername = this.discordUsername
         this.remoteNotes = this.notes
         this.saving = false

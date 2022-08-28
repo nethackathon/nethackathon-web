@@ -13,8 +13,8 @@ export async function postTwitchSchedule (schedule) {
     return axios.post(route, schedule, {withCredentials: true})
 }
 
-export async function postTwitchText (discordUsername, notes) {
+export async function postTwitchText (discordUsername, notes, pronouns) {
     const route = baseRoute + '/text'
-    return axios.post(route, {discordUsername, notes}, {withCredentials: true})
+    return axios.post(route, {discordUsername, notes, pronouns}, {withCredentials: true})
 }
 
