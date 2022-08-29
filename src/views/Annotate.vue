@@ -27,7 +27,7 @@
     </v-row>
     <v-row v-if="selectedTab === 'Intrinsics'">
       <v-col>
-        <Intrinsics 
+        <Intrinsics
             :character-data="localData"
             @update-intrinsic="updateIntrinsic"
             @update-protection="updateProtection"
@@ -162,8 +162,8 @@ export default {
       this.localData.cha = value
       update(this.localData)
     },
-    resetAnnotate: function () {
-      reset().then((res) => this.localData = res)
+    resetAnnotate: async function () {
+      this.localData = await reset()
     },
     onLoggedIn: async function () {
       this.loginMessage = ''

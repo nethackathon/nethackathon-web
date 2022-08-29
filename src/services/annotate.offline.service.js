@@ -35,15 +35,15 @@ export async function updateOffline (data) {
 export async function readOffline () {
     let localData = localStorage.getItem('annotate');
     if (localData === null) {
-        localData = defaultData
-        localStorage.setItem('annotate', JSON.stringify(localData))
-    } else {
-        localData = JSON.parse(localData)
+        localData = JSON.stringify(defaultData)
+        localStorage.setItem('annotate', localData)
     }
-    return localData
+
+    return JSON.parse(localData)
 }
 
 export async function resetOffline () {
-    localStorage.setItem('annotate', JSON.stringify(defaultData))
-    return defaultData
+    let data = JSON.stringify(defaultData)
+    localStorage.setItem('annotate', data)
+    return JSON.parse(data)
 }
