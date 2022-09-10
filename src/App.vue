@@ -16,14 +16,18 @@
       </template>
       <span>{{lampMessage}}</span>
     </v-tooltip>
-    <router-view />
+    <Help />
   </v-app>
 </template>
 
 <script>
 
+import Help from './views/Help.vue';
+
 export default {
   name: 'App',
+
+  components: { Help },
 
   created: function () {
     this.$vuetify.theme.dark = (localStorage.getItem('dark') === null) ? true : (localStorage.getItem('dark') === 'off')
