@@ -16,14 +16,19 @@
       </template>
       <span>{{lampMessage}}</span>
     </v-tooltip>
-    <router-view />
+    <coverage />
   </v-app>
 </template>
 
 <script>
 
+import Coverage from './views/Coverage.vue';
+
 export default {
+
   name: 'App',
+
+  components: { Coverage },
 
   created: function () {
     this.$vuetify.theme.dark = (localStorage.getItem('dark') === null) ? true : (localStorage.getItem('dark') === 'off')

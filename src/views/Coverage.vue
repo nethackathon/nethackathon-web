@@ -45,7 +45,7 @@ export default {
         if (streamer.schedule === null) return
         const timeStamps = JSON.parse(streamer.schedule)
         timeStamps.forEach((ts) => {
-          if (!Object.prototype.hasOwnProperty.call(coverage, ts)) coverage[ts] = [] 
+          if (!Object.prototype.hasOwnProperty.call(coverage, ts)) coverage[ts] = []
           coverage[ts].push(streamer.username)
         })
       })
@@ -56,8 +56,8 @@ export default {
     } finally {
       this.loading = false
     }
-    this.startDate = DateTime.fromISO('2022-04-15T17:00:00.000', {zone: 'utc'})
-    this.endDate = DateTime.fromISO('2022-04-18T00:00:00.000', {zone: 'utc'})
+    this.startDate = DateTime.fromISO('2022-09-16T17:00:00.000', {zone: 'utc'})
+    this.endDate = DateTime.fromISO('2022-09-19T00:00:00.000', {zone: 'utc'})
   },
 
   data: () => ({
@@ -71,9 +71,6 @@ export default {
   },
 
   methods: {
-  },
-
-  mounted: function () {
   },
 
 };
