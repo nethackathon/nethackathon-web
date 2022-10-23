@@ -18,6 +18,14 @@
             hint="* Are you a tourist below level 15, or are wearing a dunce cap, or are wearing a visible shirt?"
         />
       </div>
+      <div style="display: inline-block; margin-left: 1em;">
+        <label for="modifier">Modifier:</label>
+        <select id="modifier" v-model="selectedModifier">
+          <option v-for="m in modifiers" :selected="m.label === 'None'" v-bind:key="m.label" :value="m">
+            {{m.label}}
+          </option>
+        </select>
+      </div>
     </div>
     <table :class="{darkMode}">
       <tr>
@@ -42,7 +50,7 @@
 
 <script>
 import NHPriceIdTypes from "./NHPriceIdTypes";
-import {fraction, multiply, round} from 'mathjs'
+import {fraction, multiply, divide, round} from 'mathjs'
 import NHCheckbox from "./NHCheckbox";
 import NHNumber from "./NHNumber";
 
@@ -64,6 +72,19 @@ export default {
         'rgb(157, 255, 157)',
         'rgb(157, 157, 255)',
       ],
+      modifiers: [
+        {label: '10/1', value: fraction(10, 1)},
+        {label: '3/1', value: fraction(3, 1)},
+        {label: '2/1', value: fraction(2, 1)},
+        {label: '5/3', value: fraction(5, 3)},
+        {label: '4/3', value: fraction(4, 3)},
+        {label: '3/2', value: fraction(3, 2)},
+        {label: 'None', value: fraction(1, 1)},
+        {label: '4/5', value: fraction(4, 5)},
+        {label: '3/4', value: fraction(3, 4)},
+        {label: '2/3', value: fraction(2, 3)},
+      ],
+      selectedModifier: {label: 'None', value: fraction(1, 1)},
       basePrices: [
         { price: 8, types: [ { symbol:'[', color: '#AA5500', notes: 'elven boots, kicking boots' } ] },
         { price: 20, types: [ { symbol:'?', color: '#FFF', notes: 'identify' } ] },
@@ -172,17 +193,28 @@ export default {
         }
       },
       sellPriceMultiplier: function () {
-        return (this.isTourist) ? fraction(1, 3) : fraction(1, 2)
+        const baseModifier = (this.isTourist) ? fraction(1, 3) : fraction(1, 2)
+        const selectedSellModifier = divide(1, this.selectedModifier.value)
+        return multiply(baseModifier, selectedSellModifier)
       },
       sellPriceMultipliers: function () {
-        return [multiply(fraction(3, 4), this.sellPriceMultiplier), this.sellPriceMultiplier]
+        return [
+          multiply(fraction(3, 4), this.sellPriceMultiplier),
+          this.sellPriceMultiplier
+        ]
       },
       buyPriceMultiplier: function () {
         return (this.isTourist) ? fraction(4, 3) : 1
       },
       buyPriceMultipliers: function () {
-        const startingMultiplier = multiply(this.chaPriceMultiplier, this.buyPriceMultiplier)
-        return [startingMultiplier, multiply(fraction(4, 3), startingMultiplier)]
+        const startingMultiplier = multiply(
+            multiply(this.chaPriceMultiplier, this.buyPriceMultiplier),
+            this.selectedModifier.value
+        )
+        return [
+          startingMultiplier,
+          multiply(fraction(4, 3), startingMultiplier)
+        ]
       },
     },
 
@@ -201,18 +233,21 @@ export default {
 </script>
 
 <style>
-.nh-text {
-  font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
-}
-td, th {
-  font-weight: bold;
-  padding: 0.15em 0.7em;
-  border: 1px solid black;
-}
-table.darkMode td, table.darkMode th {
-  border: 1px solid white;
-}
-table {
-  border-collapse: collapse;
-}
+  select {
+    color: white;
+  }
+  .nh-text {
+    font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
+  }
+  td, th {
+    font-weight: bold;
+    padding: 0.15em 0.7em;
+    border: 1px solid black;
+  }
+  table.darkMode td, table.darkMode th {
+    border: 1px solid white;
+  }
+  table {
+    border-collapse: collapse;
+  }
 </style>
