@@ -27,16 +27,17 @@
           <td colspan="4" class="dateHeader">{{formattedDay(day.start)}}</td>
         </tr>
         <tr
-            :class="{streaming: s.available}"
+            :class="{streaming: (s.available === 1), preferred: (s.available === 2)}"
             @mouseover="makeAvailable(s, $event)"
             @mousedown="makeAvailable(s, $event)"
             v-for="s in slotsOnDay(day)"
             :key="s.start.toMillis()">
           <td></td>
           <td>{{ formattedStart(s.start) }} - {{ formattedStart(s.end) }}</td>
-          <td :class="{unavailable: !s.available}">
-            {{ (s.available) ? 'Available' : 'Unavailable' }}
-            <v-icon v-if="s.available" color="green">mdi-check-circle</v-icon>
+          <td :class="{unavailable: s.available === 0}">
+            {{ (s.available === 2) ? 'Preferred' : (s.available === 1) ? 'Available' : 'Unavailable' }}
+            <v-icon v-if="s.available === 1" color="green">mdi-check-circle</v-icon>
+            <v-icon v-if="s.available === 2" color="yellow">mdi-star</v-icon>
           </td>
         </tr>
         </tbody>
@@ -72,7 +73,8 @@
     computed: {
       slotsWithSchedule: function () {
         return this.slots.map((s) => {
-          s.available = (this.schedule.indexOf(s.start.ts) > -1); return s
+          s.available = (Object.hasOwn(this.schedule, s.start.ts)) ? this.schedule[s.start.ts] : 0;
+          return s;
         })
       },
       localTimeZone: function () {
@@ -114,6 +116,11 @@
 <style>
   .streaming {
     background-color: rgba(234, 63, 247, 0.5) !important;
+    cursor: pointer;
+  }
+
+  .preferred {
+    background-color: rgba(234, 63, 247, 0.6) !important;
     cursor: pointer;
   }
 

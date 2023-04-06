@@ -4,7 +4,7 @@
         <v-row class="mt-5">
           <v-col offset-md="2" md="8" cols="12">
             <h1>We need you <small>to stream NetHack.</small></h1>
-            <p>We are looking for 24 Twitch streamers to stream NetHack for two hours during the weekend of September 16th - September 18th.</p>
+            <p>We are looking for 24 Twitch streamers to stream NetHack for two hours during the weekend of April 14th - April 16th.</p>
             <p>We'll be continuing the characters started by the previous streamer and raiding the next streamer on the schedule. There will be <em>many deaths</em>, and hopefully at least one ascension.</p>
             <p v-if="!signupsClosed"><strong>Sign up today!</strong> To get started
               <input type="button" class="twitch-login" v-on:click="redirectToTwitch" value="Log In with Twitch" /></p>
@@ -85,10 +85,9 @@ import {getTwitchSchedule, postTwitchSchedule, postTwitchText} from "../services
 import {throttle} from "lodash/lodash";
 
 const throttledUpdateSchedule = throttle((schedule, remoteSchedule, cb, err) => {
-      if (schedule.length !== remoteSchedule.length ||
-          schedule.join() !== remoteSchedule.join()) {
+      if (JSON.stringify(schedule) !== JSON.stringify(remoteSchedule)) {
         // if the schedule has changed
-        const postedSchedule = [...schedule]
+        const postedSchedule = {...schedule}
         postTwitchSchedule(postedSchedule).then(cb).catch(err)
       } else {
         cb()
@@ -124,7 +123,7 @@ export default {
       const response = await getTwitchSchedule()
       this.loggedIn = true
       this.remoteSchedule = response.data.schedule
-      this.schedule = [...this.remoteSchedule]
+      this.schedule = {...this.remoteSchedule}
       this.username = response.data.username
       this.remoteDiscordUsername = response.data.discordUsername
       this.discordUsername = this.remoteDiscordUsername
@@ -138,8 +137,8 @@ export default {
     } finally {
       this.loading = false
     }
-    this.startDate = DateTime.fromISO('2022-09-16T17:00:00.000', {zone: 'utc'})
-    this.endDate = DateTime.fromISO('2022-09-19T00:00:00.000', {zone: 'utc'})
+    this.startDate = DateTime.fromISO('2023-04-14T17:00:00.000', {zone: 'utc'})
+    this.endDate = DateTime.fromISO('2023-04-17T02:00:00.000', {zone: 'utc'})
   },
 
   data: () => ({
@@ -152,8 +151,8 @@ export default {
     saving: false,
     saved: false,
     username: undefined,
-    schedule: [],
-    remoteSchedule: [],
+    schedule: {},
+    remoteSchedule: {},
     loading: true,
     loggedIn: false,
     twitchId: undefined,
@@ -191,16 +190,18 @@ export default {
       })
     },
     scheduleSlot(slot) {
-      if (this.schedule.indexOf(slot.start.ts) > -1) {
-        this.schedule = this.schedule.filter((s) => s !== slot.start.ts)
+      const updatedSchedule = {...this.schedule}
+      if (Object.hasOwn(this.schedule, slot.start.ts)) {
+        updatedSchedule[slot.start.ts] = (updatedSchedule[slot.start.ts] + 1) % 3
       } else {
-        this.schedule.push(slot.start.ts)
+        updatedSchedule[slot.start.ts] = 1
       }
+      this.schedule = updatedSchedule
       this.saving = true
       throttledUpdateSchedule(this.schedule, this.remoteSchedule, () => {
         this.saving = false
         this.saved = true
-        this.remoteSchedule = [...this.schedule]
+        this.remoteSchedule = {...this.schedule}
       }, (err) => {
         console.error(err)
         this.saving = false
