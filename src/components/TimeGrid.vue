@@ -73,7 +73,7 @@
     computed: {
       slotsWithSchedule: function () {
         return this.slots.map((s) => {
-          s.available = (Object.hasOwn(this.schedule, s.start.ts)) ? this.schedule[s.start.ts] : 0;
+          s.available = (Object.prototype.hasOwnProperty.call(this.schedule, s.start.ts)) ? this.schedule[s.start.ts] : 0;
           return s;
         })
       },

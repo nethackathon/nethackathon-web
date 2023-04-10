@@ -20,7 +20,7 @@
         <v-row>
           <v-col offset-md="2" md="8" cols="12">
             <h3 class="lead mb-4 text-justify">
-              On <strong>April 15 - 17, 2022</strong>, twenty-three Twitch content creators will stream NetHack continuously
+              On <strong>April 14 - 16</strong>, Twitch content creators will stream NetHack continuously
               for over 48 hours!
             </h3>
             <h2 v-if="tbd"><router-link :to="'/signup'">Streamers, sign up today!</router-link></h2>

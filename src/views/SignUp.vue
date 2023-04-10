@@ -191,7 +191,7 @@ export default {
     },
     scheduleSlot(slot) {
       const updatedSchedule = {...this.schedule}
-      if (Object.hasOwn(this.schedule, slot.start.ts)) {
+      if (Object.prototype.hasOwnProperty.call(this.schedule, slot.start.ts)) {
         updatedSchedule[slot.start.ts] = (updatedSchedule[slot.start.ts] + 1) % 3
       } else {
         updatedSchedule[slot.start.ts] = 1
