@@ -2,8 +2,10 @@
   <div>
     <h1>Availability <span style="font-size: small;">All times {{localTimeZone}}</span></h1>
     <p>Please mark ALL times that you are available.</p>
-    <p><em>You are only committing to one 2-hour time slot during the marathon.</em></p>
-    <p>Click or click-and-drag to mark or unmark time slots.</p>
+    <p>Click preferred time slots a 2nd time to star. We'll do our best to schedule you in preferred time slots first.</p>
+    <p><em>You are only committing to one 2-3 hour time slot during the marathon according to your preferences.</em></p>
+    <p>Click or click-and-drag (drag slowly) to mark or unmark time slots.</p>
+    <p>Availabilities are saved automatically, you can change your options at any time while sign-ups are open.</p>
     <v-simple-table>
       <template v-slot:default>
         <thead>

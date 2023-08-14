@@ -4,7 +4,7 @@
         <v-row class="mt-5">
           <v-col offset-md="2" md="8" cols="12">
             <h1>We need you <small>to stream NetHack.</small></h1>
-            <p>We are looking for 24 Twitch streamers to stream NetHack for two hours during the weekend of April 14th - April 16th.</p>
+            <p>We are looking for 24 Twitch streamers to stream NetHack for two hours during the weekend of September 8th - 10th.</p>
             <p>We'll be continuing the characters started by the previous streamer and raiding the next streamer on the schedule. There will be <em>many deaths</em>, and hopefully at least one ascension.</p>
             <p v-if="!signupsClosed"><strong>Sign up today!</strong> To get started
               <input type="button" class="twitch-login" v-on:click="redirectToTwitch" value="Log In with Twitch" /></p>
@@ -41,6 +41,12 @@
                   label="Twitch username"
                   readonly
               ></v-text-field>
+              <v-select
+                v-model="slotLength"
+                label="Maximum slot length (most streamers will be assigned a 2 hours slot)"
+                @change="updateText"
+                :items="slotLengths"
+              ></v-select>
               <v-text-field
                   v-model="pronouns"
                   label="Preferred pronouns (e.g. they/them/their)"
@@ -94,12 +100,13 @@ const throttledUpdateSchedule = throttle((schedule, remoteSchedule, cb, err) => 
       }
     }, 2000, {leading: false, trailing: true})
 
-const throttledUpdateText = throttle((pronouns, remotePronouns, discordUsername, remoteDiscordUsername, notes, remoteNotes, cb, err) => {
+const throttledUpdateText = throttle((pronouns, remotePronouns, discordUsername, remoteDiscordUsername, notes, remoteNotes, slotLength, remoteSlotLength, cb, err) => {
   if (discordUsername !== remoteDiscordUsername ||
       notes !== remoteNotes ||
-      pronouns !== remotePronouns) {
+      pronouns !== remotePronouns ||
+      slotLength !== remoteSlotLength) {
     // if the text has changed
-    postTwitchText(discordUsername, notes, pronouns).then(cb).catch(err)
+    postTwitchText(discordUsername, notes, pronouns, slotLength).then(cb).catch(err)
   } else {
     cb()
   }
@@ -131,14 +138,15 @@ export default {
       this.pronouns = this.remotePronouns
       this.remoteNotes = response.data.notes
       this.notes = this.remoteNotes
+      this.slotLength = this.remoteSlotLength = response.data.slotLength
     } catch (err) {
       console.error(err)
       this.loggedIn = false
     } finally {
       this.loading = false
     }
-    this.startDate = DateTime.fromISO('2023-04-14T17:00:00.000', {zone: 'utc'})
-    this.endDate = DateTime.fromISO('2023-04-17T02:00:00.000', {zone: 'utc'})
+    this.startDate = DateTime.fromISO('2023-09-08T17:00:00.000', {zone: 'utc'})
+    this.endDate = DateTime.fromISO('2023-09-10T02:00:00.000', {zone: 'utc'})
   },
 
   data: () => ({
@@ -151,6 +159,13 @@ export default {
     saving: false,
     saved: false,
     username: undefined,
+    remoteSlotLength: undefined,
+    slotLength: undefined,
+    slotLengths: [
+        "2 hours",
+        "3 hours",
+        "4 hours"
+    ],
     schedule: {},
     remoteSchedule: {},
     loading: true,
@@ -176,9 +191,11 @@ export default {
     },
     updateText() {
       this.saving = true
-      throttledUpdateText(this.pronouns, this.remotePronouns, this.discordUsername, this.remoteDiscordUsername, this.notes, this.remoteNotes, () => {
+      throttledUpdateText(this.pronouns, this.remotePronouns, this.discordUsername, this.remoteDiscordUsername, this.notes, this.remoteNotes, this.slotLength, this.remoteSlotLength, () => {
+        this.remotePronouns = this.pronouns
         this.remoteDiscordUsername = this.discordUsername
         this.remoteNotes = this.notes
+        this.remoteSlotLength = this.slotLength
         this.saving = false
         this.saved = true
       }, (err) => {
