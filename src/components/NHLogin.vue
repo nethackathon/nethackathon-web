@@ -81,7 +81,7 @@ export default {
       this.passwordColor = color
     },
     handleLogin: function (res) {
-      if (res.status === 200) {
+      if (res.status === 201) {
         // Yes, I understand that this is vulnerable to XSS attacks
         // However, who is going to want to hack this web app?
         localStorage.setItem('nethackathon-jwt', res.data);
