@@ -146,7 +146,7 @@ export default {
       this.loading = false
     }
     this.startDate = DateTime.fromISO('2023-09-08T17:00:00.000', {zone: 'utc'})
-    this.endDate = DateTime.fromISO('2023-09-10T02:00:00.000', {zone: 'utc'})
+    this.endDate = DateTime.fromISO('2023-09-11T02:00:00.000', {zone: 'utc'})
   },
 
   data: () => ({
