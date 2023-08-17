@@ -12,7 +12,12 @@ if (token) {
 
 export async function register (data) {
     const registerRoute = route + '/register'
-    const res = await axios.post(registerRoute, data)
+    const res = await axios.post(registerRoute, data, {
+        // We're handling errors by looking at the response status down the line
+        validateStatus: function () {
+            return true
+        }
+    })
     if (res.status === 201) {
         axios.defaults.headers.common['x-access-token'] = res.data
     }

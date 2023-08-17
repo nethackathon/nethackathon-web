@@ -21,11 +21,14 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="6">
+      <v-col cols="12">
         <NHButton :label="(registering) ? 'Submit' : 'Login'" @clicked="onLogin" :disabled="buttonDisabled"/>
       </v-col>
-      <v-col cols="6" class="text-right">
-        <span v-if="!registering" class="nh-link nh-clickable" @click="registering = true">Register</span>
+    </v-row>
+    <v-row>
+      <v-col cols="12" class="text-right">
+        <span v-if="!registering" class="nh-link nh-clickable sm1" @click="registering = true">or, Register a new account</span>
+        <span v-if="registering" class="nh-link nh-clickable sm1" @click="registering = false">or, Login with an existing account</span>
       </v-col>
     </v-row>
     <v-row v-if="error.length > 0"><strong class="red--text">{{ error }}</strong></v-row>
